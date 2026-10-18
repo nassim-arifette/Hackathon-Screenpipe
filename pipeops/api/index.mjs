@@ -40,6 +40,9 @@ app.get('/api/runs', (_req, res) => res.json([]));
 app.get('/api/variants', (_req, res) => res.json([]));
 app.get('/api/snapshots', (_req, res) => res.json([]));
 app.get('/api/suites', (_req, res) => res.json(BUILTIN_SUITES));
+app.get('/api/stage-runs', (_req, res) => res.json([]));
+app.get('/api/stage-runs/regraded', (_req, res) => res.json({}));
+app.get('/api/stage-results', (_req, res) => res.json([]));
 app.get('/api/wfeval/status', (_req, res) => res.json({ running: false, runId: null, error: null }));
 
 app.get('/api/demo-runs', async (_req, res) => {
