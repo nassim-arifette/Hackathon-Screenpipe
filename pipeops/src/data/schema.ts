@@ -55,6 +55,9 @@ export interface CheckRecord {
   actual: string | null;
   reason: string | null;
   evidence: string[] | null;
+  /** Keyword checks only: true when the words are in the stages (what to do), false when
+   *  they appear only in a variation, question or limitation. null/absent otherwise. */
+  inStages?: boolean | null;
 }
 
 export interface RunMetrics {
@@ -62,6 +65,9 @@ export interface RunMetrics {
   qualityTotal: number;
   modelRequests: number;
   runtimeSeconds: number;
+  /** Workflows calls the engine refused (usage.workspace.failed, summed over phases).
+   *  null when the run predates that logging (started before 2026-10-17 20:00Z). */
+  failedCalls?: number | null;
 }
 
 /**
@@ -82,6 +88,25 @@ export interface Efficiency {
   source: 'request_log' | 'pipe_logs' | 'mixed' | null;
 }
 
+/** One graded phase of a full run. null = the artifact did not record it (not zero). */
+export interface PhaseResult {
+  phase: number;
+  /** 'complete', or 'idle' when the engine declined to start a cycle (nothing new was recorded). */
+  cycleStatus: string | null;
+  /** Frames of history the phase was given (0 = nothing new was recorded). */
+  frames: number | null;
+  checksPassed: number | null;
+  checksScored: number | null;
+  requests: number | null;
+  runtimeSeconds: number | null;
+  inputTokens: number | null;
+  cacheReadTokens: number | null;
+  cacheWriteTokens: number | null;
+  outputTokens: number | null;
+  /** Graded mistakes by tag, e.g. { idle_churn: 1 }. */
+  mistakes: Record<string, number> | null;
+}
+
 export interface RawRun {
   id: string;
   label: string;
@@ -91,11 +116,23 @@ export interface RawRun {
   metrics: RunMetrics;
   /** Absent on the mock placeholder and on artifacts that carry no usage at all. */
   efficiency?: Efficiency | null;
+  /** Per-phase results; absent in files exported before phases were recorded. */
+  phases?: PhaseResult[] | null;
   stages: Record<StageId, StageRecord>;
   recordedActivity: { description: string; sources?: string[] } | null;
   generatedWorkflows: WorkflowRecord[] | null;
   groundTruth: WorkflowRecord[] | null;
   checks: CheckRecord[] | null;
+}
+
+/** An independent review of the pair (an LLM judge), separate from the automatic checks. */
+export interface PairReview {
+  kind: 'llm-judge';
+  judgments: number;
+  pairs: { pair: string; phase: number; job: string; verdict: 'baseline' | 'variant' | 'inconsistent'; strengths: (string | null)[] }[];
+  summary: { baseline: number; variant: number; inconsistent: number };
+  method: { describedIn: string; note: string };
+  source: { generatedBy: string; sha256: Record<string, string> };
 }
 
 export interface RawExperimentBundle {
@@ -111,6 +148,8 @@ export interface RawExperimentBundle {
     pairing: 'single' | 'multiple';
     verdict: string;
     note: string;
+    /** Present only when a review file for exactly this pair was imported. */
+    review?: PairReview | null;
   };
 }
 

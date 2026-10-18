@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import type { Experiment, Run, WorkflowRecord } from '../data/schema';
 import { CheckRing } from '../components/CheckRing';
-import { Badge, Eyebrow, GhostButton, Missing, PlayIcon } from '../components/ui';
+import { Badge, Eyebrow, Missing, PlayIcon, PrimaryButton } from '../components/ui';
 import { pad2 } from '../lib/format';
 import { usePlayKey } from '../lib/events';
 
@@ -16,12 +16,12 @@ export function EvidenceView({ experiment, run }: { experiment: Experiment; run:
 function NoCheckDetail({ run }: { run: Run }) {
   return (
     <div className="flex h-full flex-col items-center justify-center px-10">
-      <Eyebrow>Evidence explorer · run/{run.id}</Eyebrow>
-      <div className="mt-4 text-[64px] font-semibold leading-none tracking-tightest text-ink-50">
+      <Eyebrow size="lg">Evidence explorer</Eyebrow>
+      <div className="mt-4 text-[68px] font-semibold leading-none tracking-tightest text-ink-50">
         {run.metrics.qualityPassed}/{run.metrics.qualityTotal}
-        <span className="ml-3 text-[28px] font-normal text-ink-400">checks passed</span>
+        <span className="ml-3 text-[32px] font-normal text-ink-400">checks passed</span>
       </div>
-      <p className="mt-6 max-w-[520px] text-center text-[15px] leading-relaxed text-ink-400">
+      <p className="mt-6 max-w-[520px] text-center text-[17.5px] leading-relaxed text-ink-400">
         Individual check details are unavailable in this artifact.
       </p>
       <div className="mt-4">
@@ -70,15 +70,12 @@ function LoadedEvidenceView({ experiment, run }: { experiment: Experiment; run: 
     <div className="flex h-full">
       {/* -------- lenses -------- */}
       <aside className="flex w-[400px] shrink-0 flex-col border-r border-ink-800 px-10 py-8">
-        <Eyebrow>Evidence explorer · run/{run.id}</Eyebrow>
-        <h2 className="mt-3 text-[40px] font-semibold leading-[1.02] tracking-tightest text-ink-50">
+        <Eyebrow size="lg" className="!text-signal">Evidence explorer</Eyebrow>
+        <h2 className="mt-3 text-[44px] font-semibold leading-[1.02] tracking-tightest text-ink-50">
           Why did each check pass?
         </h2>
-        <p className="mt-4 text-[15px] leading-relaxed text-ink-400">
-          Pick a lens, then a check. Each verdict is traced back to the artifact field it came from.
-        </p>
 
-        <div className="mt-10 flex flex-col gap-1.5">
+        <div className="mt-12 flex flex-col gap-3">
           <LensRow label="All checks" count={n} active={lens === null} onClick={() => setLens(null)} />
           {experiment.evidenceLenses.map((l) => (
             <LensRow
@@ -93,15 +90,15 @@ function LoadedEvidenceView({ experiment, run }: { experiment: Experiment; run: 
         {!lensesMapped && (
           <div className="mt-4">
             <Missing size="sm" path="checks[].lens" />
-            <p className="mt-2 text-[12px] leading-relaxed text-ink-500">
+            <p className="mt-2 text-[14.5px] leading-relaxed text-ink-400">
               The artifact does not say which lens each check belongs to, so lens filters show no checks yet.
             </p>
           </div>
         )}
 
-        <GhostButton className="mt-auto self-start" onClick={scan} active={scanning}>
+        <PrimaryButton size="xl" className="mt-auto self-start" onClick={scan}>
           <PlayIcon /> {scanning ? 'Scanning checks…' : 'Scan all checks'}
-        </GhostButton>
+        </PrimaryButton>
       </aside>
 
       {/* -------- instrument -------- */}
@@ -127,24 +124,27 @@ function LoadedEvidenceView({ experiment, run }: { experiment: Experiment; run: 
                 transition={{ duration: 0.18 }}
                 className="flex flex-col items-center"
               >
-                <span className="font-mono text-[12px] uppercase tracking-[0.2em] text-ink-400">check {pad2(selected + 1)}</span>
-                <span className={`mt-1 text-[64px] font-semibold leading-none tracking-tightest ${check.passed ? 'text-signal text-glow' : 'text-cost'}`}>
+                <span className="font-mono text-[16px] uppercase tracking-[0.2em] text-ink-400">check {pad2(selected + 1)}</span>
+                <span className={`mt-1 text-[100px] font-semibold leading-none tracking-tightest ${check.passed ? 'text-signal text-glow' : 'text-cost'}`}>
                   {check.passed ? 'PASS' : 'FAIL'}
                 </span>
               </motion.div>
             </AnimatePresence>
-            <span className="tnum mt-3 font-mono text-[13px] text-ink-400">
+            <span className="tnum mt-3 font-mono text-[18px] text-ink-300">
               {passedCount}/{n} passed
             </span>
           </div>
           {lens !== null && (
-            <div className="absolute inset-x-0 -bottom-2 text-center font-mono text-[11px] text-ink-500">
+            <div className="absolute inset-x-0 -bottom-9 text-center font-mono text-[13px] text-ink-400">
               {lensesMapped ? `${lensCount(lens)} checks in this lens` : '0 checks mapped to this lens · lens not in artifact'}
             </div>
           )}
         </div>
 
-        <Matching run={run} />
+        {/* centred in the space below the ring */}
+        <div className="flex w-full flex-1 items-center justify-center pb-6">
+          <Matching run={run} />
+        </div>
       </section>
 
       {/* -------- dossier -------- */}
@@ -156,10 +156,10 @@ function LoadedEvidenceView({ experiment, run }: { experiment: Experiment; run: 
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -8 }}
             transition={{ duration: 0.2 }}
-            className="flex h-full flex-col px-10 py-8"
+            className="flex h-full flex-col overflow-y-auto px-10 py-8"
           >
             <div className="flex items-center justify-between">
-              <Eyebrow>Dossier · check {pad2(selected + 1)} of {pad2(n)}</Eyebrow>
+              <Eyebrow size="lg">Dossier · check {pad2(selected + 1)} of {pad2(n)}</Eyebrow>
               <div className="flex gap-1">
                 <NavBtn onClick={() => setSelected((selected - 1 + n) % n)}>‹</NavBtn>
                 <NavBtn onClick={() => setSelected((selected + 1) % n)}>›</NavBtn>
@@ -168,10 +168,10 @@ function LoadedEvidenceView({ experiment, run }: { experiment: Experiment; run: 
 
             <div className="mt-4">
               {check.name ? (
-                <div className="text-[28px] font-semibold tracking-tight text-ink-50">{check.name}</div>
+                <div className="text-[32px] font-semibold tracking-tight text-ink-50">{check.name}</div>
               ) : (
                 <div className="flex flex-col gap-2">
-                  <div className="text-[28px] font-semibold tracking-tight text-ink-500">Unnamed check</div>
+                  <div className="text-[32px] font-semibold tracking-tight text-ink-400">Unnamed check</div>
                   <Missing size="sm" path={`checks[${selected}].name`} />
                 </div>
               )}
@@ -180,28 +180,34 @@ function LoadedEvidenceView({ experiment, run }: { experiment: Experiment; run: 
             {/* verdict + provenance */}
             <div className={`mt-6 rounded-2xl border p-5 ${check.passed ? 'border-signal/40 bg-signal/[0.05]' : 'border-cost/40 bg-cost/[0.06]'}`}>
               <div className="flex items-center justify-between">
-                <span className={`flex items-center gap-3 text-[22px] font-semibold ${check.passed ? 'text-signal' : 'text-cost'}`}>
+                <span className={`flex items-center gap-3 text-[25px] font-semibold ${check.passed ? 'text-signal' : 'text-cost'}`}>
                   <span className={`flex h-8 w-8 items-center justify-center rounded-full ${check.passed ? 'bg-signal text-on-signal' : 'bg-cost text-on-signal'}`}>
                     {check.passed ? '✓' : '×'}
                   </span>
                   {check.passed ? 'Passed' : 'Failed'}
                 </span>
-                <Badge kind="recorded" />
               </div>
-              <p className="mt-3 text-[14px] leading-relaxed text-ink-300">Verdict recorded in the evaluation artifact.</p>
+              {/* in_stages: reported by the grader for passing keyword checks, never scored */}
+              {check.passed && check.inStages != null && (
+                <p
+                  className={`mt-2 flex items-start gap-2 text-[15.5px] leading-relaxed ${check.inStages ? 'text-ink-300' : 'text-cost'}`}
+                  title="Reported by the grader (in_stages), not scored"
+                >
+                  <span className="mt-[3px] font-mono text-[12px] uppercase tracking-widest text-ink-400">in steps</span>
+                  {check.inStages
+                    ? 'Its words are in the workflow’s steps: the workflow says what to do.'
+                    : 'Passes on wording only: the words appear in a variation, question or limitation, not in the steps.'}
+                </p>
+              )}
             </div>
 
-            {/* why */}
-            <div className="mt-6">
-              <Eyebrow>Why</Eyebrow>
-              <div className="mt-2">
-                {check.reason ? (
-                  <p className="text-[15px] leading-relaxed text-ink-100">{check.reason}</p>
-                ) : (
-                  <Missing path={`checks[${selected}].reason`} />
-                )}
+            {/* why: only when the grader recorded a reason */}
+            {check.reason && (
+              <div className="mt-6">
+                <Eyebrow size="lg">Why</Eyebrow>
+                <p className="mt-2 text-[17.5px] leading-relaxed text-ink-100">{check.reason}</p>
               </div>
-            </div>
+            )}
 
             {/* expected vs actual */}
             <div className="mt-6 grid grid-cols-2 gap-3">
@@ -211,11 +217,11 @@ function LoadedEvidenceView({ experiment, run }: { experiment: Experiment; run: 
 
             {/* evidence */}
             <div className="mt-6">
-              <Eyebrow>Evidence</Eyebrow>
+              <Eyebrow size="lg">Evidence</Eyebrow>
               <div className="mt-2 space-y-2">
                 {check.evidence ? (
                   check.evidence.map((e, k) => (
-                    <div key={k} className="rounded-lg border border-ink-700 bg-ink-900 px-3 py-2 font-mono text-[12px] text-ink-200">
+                    <div key={k} className="rounded-lg border border-ink-700 bg-ink-900 px-3 py-2 font-mono text-[14px] text-ink-200 [overflow-wrap:anywhere]">
                       {e}
                     </div>
                   ))
@@ -224,10 +230,6 @@ function LoadedEvidenceView({ experiment, run }: { experiment: Experiment; run: 
                 )}
               </div>
             </div>
-
-            <p className="mt-auto font-mono text-[11px] leading-relaxed text-ink-600">
-              Nothing in this dossier is generated. Empty fields fill in when the run's evaluation JSON is connected.
-            </p>
           </motion.div>
         </AnimatePresence>
       </aside>
@@ -239,15 +241,15 @@ function LensRow({ label, count, active, onClick }: { label: string; count: numb
   return (
     <button
       onClick={onClick}
-      className={`flex items-center justify-between rounded-xl px-4 py-3 text-left transition ${
-        active ? 'bg-ink-850 text-ink-50 ring-1 ring-signal/40' : 'text-ink-300 hover:bg-ink-900 hover:text-ink-100'
+      className={`flex items-center justify-between rounded-xl px-4 py-4 text-left transition ${
+        active ? 'bg-signal/[0.08] text-signal ring-1 ring-signal/50' : 'text-signal/70 hover:bg-ink-900 hover:text-signal'
       }`}
     >
-      <span className="flex items-center gap-3 text-[15px]">
-        <span className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-signal' : 'bg-ink-600'}`} />
+      <span className="flex items-center gap-3 text-[19px]">
+        <span className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-signal' : 'bg-signal/40'}`} />
         {label}
       </span>
-      <span className="tnum font-mono text-[12px] text-ink-500">{count ?? '—'}</span>
+      <span className="tnum font-mono text-[18px] text-current">{count ?? '—'}</span>
     </button>
   );
 }
@@ -256,7 +258,7 @@ function NavBtn({ children, onClick }: { children: React.ReactNode; onClick: () 
   return (
     <button
       onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-ink-700 text-[18px] text-ink-300 hover:border-ink-400 hover:text-ink-50"
+      className="flex h-8 w-8 items-center justify-center rounded-full border border-ink-700 text-[21px] text-ink-300 hover:border-ink-400 hover:text-ink-50"
     >
       {children}
     </button>
@@ -266,9 +268,9 @@ function NavBtn({ children, onClick }: { children: React.ReactNode; onClick: () 
 function Side({ label, value, path }: { label: string; value: string | null; path: string }) {
   return (
     <div className={`min-h-[96px] rounded-xl border p-3 ${value ? 'border-ink-700 bg-ink-900' : 'hatch-muted border-dashed border-ink-700'}`}>
-      <div className="font-mono text-[11px] uppercase tracking-widest text-ink-500">{label}</div>
-      <div className="mt-2 text-[14px] text-ink-100">
-        {value ?? <span className="break-all font-mono text-[11px] text-ink-500">— {path}</span>}
+      <div className="font-mono text-[13px] uppercase tracking-widest text-ink-400">{label}</div>
+      <div className="mt-2 max-h-[190px] overflow-y-auto pr-1 text-[16.5px] leading-snug text-ink-100">
+        {value ?? <span className="break-all font-mono text-[13px] text-ink-400">— {path}</span>}
       </div>
     </div>
   );
@@ -280,19 +282,19 @@ function Matching({ run }: { run: Run }) {
   const gen = run.generatedWorkflows;
   const ready = gt !== null && gen !== null;
   const rows = ready ? Math.max(gt.length, gen.length) : 4;
-  const rowH = 44;
+  const rowH = 64;
   const height = rows * rowH + 8;
 
   const left: (WorkflowRecord | null)[] = ready ? gt : Array(rows).fill(null);
   const right: (WorkflowRecord | null)[] = ready ? gen : Array(rows).fill(null);
 
   return (
-    <div className="mt-10 w-full max-w-[900px]">
-      <div className="mb-3 flex items-center justify-between">
-        <Eyebrow>Expected workflows ↔ agent output</Eyebrow>
-        {ready ? <Badge kind="recorded" /> : <Badge kind="placeholder" />}
+    <div className="w-full max-w-[960px]">
+      <div className="mb-4 flex items-center justify-between">
+        <Eyebrow size="xl">Expected workflows ↔ agent output</Eyebrow>
+        {!ready && <Badge size="lg" kind="placeholder" />}
       </div>
-      <div className="relative grid grid-cols-[1fr_200px_1fr]" style={{ height }}>
+      <div className="relative grid grid-cols-[1fr_140px_1fr]" style={{ height }}>
         <Column items={left} label="ground truth" rowH={rowH} />
         <svg className="h-full w-full" viewBox={`0 0 200 ${height}`} preserveAspectRatio="none">
           {left.map((l, i) => {
@@ -306,7 +308,7 @@ function Matching({ run }: { run: Run }) {
                 d={`M 0 ${y0} C 100 ${y0}, 100 ${y1}, 200 ${y1}`}
                 fill="none"
                 stroke={ready ? 'rgb(var(--signal))' : 'rgb(var(--ink-500))'}
-                strokeWidth="1.5"
+                strokeWidth="2.5"
                 className={ready ? '' : 'dash-flow'}
               />
             );
@@ -315,7 +317,7 @@ function Matching({ run }: { run: Run }) {
         <Column items={right} label="generated" rowH={rowH} />
       </div>
       {!ready && (
-        <div className="mt-3 text-center font-mono text-[11px] text-ink-500">
+        <div className="mt-3 text-center font-mono text-[13px] text-ink-400">
           matching appears when groundTruth and generatedWorkflows are in the run JSON · slot count is illustrative
         </div>
       )}
@@ -329,9 +331,9 @@ function Column({ items, label, rowH }: { items: (WorkflowRecord | null)[]; labe
       {items.map((w, i) => (
         <div key={i} className="flex min-w-0 items-center" style={{ height: rowH }}>
           {w ? (
-            <div title={w.title} className="w-full min-w-0 truncate rounded-lg border border-ink-600 bg-ink-900 px-3 py-2 text-[13px] text-ink-100">{w.title}</div>
+            <div title={w.title} className="w-full min-w-0 truncate rounded-xl border border-ink-600 bg-ink-900 px-4 py-3 text-[18px] text-ink-100">{w.title}</div>
           ) : (
-            <div className="flex w-full items-center justify-between rounded-lg border border-dashed border-ink-700 px-3 py-2 font-mono text-[11px] text-ink-600">
+            <div className="flex w-full items-center justify-between rounded-lg border border-dashed border-ink-700 px-3 py-2 font-mono text-[13px] text-ink-500">
               <span>{label}</span>
               <span>—</span>
             </div>

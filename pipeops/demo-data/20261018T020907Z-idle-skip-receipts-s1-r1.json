@@ -1,0 +1,465 @@
+{
+  "format": "pipeops.run",
+  "formatVersion": 1,
+  "kind": "full",
+  "exportedAt": "2026-10-18T10:02:46.957Z",
+  "run": {
+    "id": "20261018T020907Z-idle-skip-receipts-s1-r1",
+    "label": "idle-skip",
+    "startedAt": "2026-10-18T02:09:15.754440+00:00",
+    "finishedAt": "2026-10-18T02:38:15.398596+00:00"
+  },
+  "conditions": {
+    "suite": "receipts",
+    "seed": 1,
+    "repeat": 1,
+    "phases": [
+      1,
+      2,
+      3
+    ],
+    "framesByPhase": {
+      "1": 586,
+      "2": 126,
+      "3": 0
+    },
+    "dataSha256": {
+      "phase1.json": "f2343f495408afdae3a4f4fa14fbd796697a9dcaff748002a3631972f4c95b1d",
+      "phase2.json": "5980fc69ca88ba3f4f5aa8b895ac2f2338c03121440a758d1e2dd64caa445e2d",
+      "phase3.json": "adc478e0bc5c3ab1e1f7b2e502e6e8588552ffe3dd20ab5b0077de9930084346",
+      "truth.json": "1a12ed188b5dec660705b446eda09c666e52266ecc1b3b4cd0dcb5bca89e6054"
+    }
+  },
+  "provenance": {
+    "variant": {
+      "name": "idle-skip",
+      "description": "cited-evidence plus no cycle when nothing was recorded after the last completed one: Discover is not ready (no model session) and start returns idle instead of a cycle (wf/idle-skip).",
+      "file": "variants/idle-skip.json",
+      "sha256": "f9d840fcf0f0e6b6e1013f67ccbbb83f22cbfa6496aa4f2461309579c4f101c3",
+      "pipeOverridesSha256": {}
+    },
+    "model": {
+      "provider": "screenpipe-cloud",
+      "name": "claude-sonnet-5"
+    },
+    "engine": {
+      "commit": "a8aaee2d6348aa1a0578981098fe97c2ec46d32a",
+      "patchSha256": null
+    },
+    "harness": {
+      "piVersion": "0.84.1",
+      "bunVersion": "1.3.10"
+    },
+    "promptSha256": {
+      "workflow-deepen.input": "1b29502555a23d9f91d44adf69c950ea125582444d4316b49e78bb525d7ba077",
+      "workflow-deepen.instructions": "dd40febea7d8175a2bcad9218ecc8535b7775251f6c4deaf8f297caef04835a8",
+      "workflow-deepen.tools": "6f3dfd5fffe070b68385b48f249309832e764d0b07ba0d8b9c1834be12cae51a",
+      "workflow-discover.input": "38b4850925f1b765ae755fd3acc241b77531bff21f6974ba8285df857c63964f",
+      "workflow-discover.instructions": "7ec725339dc77033e10911e5549b87efadb40a792ab91caa216084fdf4a96367",
+      "workflow-discover.tools": "7b9800a0803d7691da79b48854819b70db5eea014058b969589b177324e7778b",
+      "workflow-maintain.input": "57cb3c161b5c2c7e2be2b80b9b765e428f12e7c81640726463e8f789f1d08797",
+      "workflow-maintain.instructions": "646d106cf6b5041b079a2fa70478a0567a40e9ce891751a8c9b4406b347c09e1",
+      "workflow-maintain.tools": "e152eb4dc23c907aaa74cbc1093d632f8ed576d1c4f4931908a76c5aabdfa7a3",
+      "workflow-review.input": "1332612644e03dc5b4d92c442c66e6a65d5c56507c77919a27cd705555e3d6b6",
+      "workflow-review.instructions": "8054438be3549d58bdc7884176da1db766f3a1ca3fb54077fa6bbf6db224cdda",
+      "workflow-review.tools": "3dcdf54ba4e757960bb31be6fe1164f3070c5eb82c845fdb04b5de19f2858f9f"
+    },
+    "contaminationClean": true,
+    "sanitization": {
+      "redactedHomePaths": 0
+    }
+  },
+  "groundTruth": [
+    {
+      "id": "email",
+      "title": "Save an emailed attachment into the project folder and reply",
+      "expect": "published"
+    },
+    {
+      "id": "printer",
+      "title": "One-off printer driver setup",
+      "expect": "unpublished"
+    },
+    {
+      "id": "receipts",
+      "title": "Rename scanned receipts DATE_NAME_TYPE.pdf and log them in tracker.csv",
+      "expect": "published"
+    }
+  ],
+  "metrics": {
+    "qualityPassed": 14,
+    "qualityTotal": 14,
+    "modelRequests": 111,
+    "runtimeSeconds": 619,
+    "failedCalls": 15,
+    "costUsd": null
+  },
+  "modelUsage": {
+    "total": {
+      "inputTokens": 357269,
+      "cacheReadTokens": 3664764,
+      "cacheWriteTokens": 0,
+      "outputTokens": 92502,
+      "reasoningTokens": 0,
+      "requests": 111,
+      "toolCalls": 123,
+      "source": "request_log"
+    },
+    "byTask": {
+      "workflow-discover": {
+        "requests": 30,
+        "inputTokens": 80838,
+        "cacheReadTokens": 864895,
+        "outputTokens": 15411
+      },
+      "workflow-maintain": {
+        "requests": 23,
+        "inputTokens": 76578,
+        "cacheReadTokens": 801364,
+        "outputTokens": 27425
+      },
+      "workflow-deepen": {
+        "requests": 38,
+        "inputTokens": 123722,
+        "cacheReadTokens": 1538490,
+        "outputTokens": 35059
+      },
+      "workflow-review": {
+        "requests": 20,
+        "inputTokens": 76131,
+        "cacheReadTokens": 460015,
+        "outputTokens": 14607
+      }
+    }
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "cycleStatus": "complete",
+      "frames": 586,
+      "checksPassed": 11,
+      "checksScored": 11,
+      "requests": 57,
+      "runtimeSeconds": 347,
+      "inputTokens": 154169,
+      "cacheReadTokens": 1837173,
+      "cacheWriteTokens": 0,
+      "outputTokens": 42306,
+      "mistakes": {}
+    },
+    {
+      "phase": 2,
+      "cycleStatus": "complete",
+      "frames": 126,
+      "checksPassed": 2,
+      "checksScored": 2,
+      "requests": 54,
+      "runtimeSeconds": 272,
+      "inputTokens": 203100,
+      "cacheReadTokens": 1827591,
+      "cacheWriteTokens": 0,
+      "outputTokens": 50196,
+      "mistakes": {}
+    },
+    {
+      "phase": 3,
+      "cycleStatus": "idle",
+      "frames": 0,
+      "checksPassed": 1,
+      "checksScored": 1,
+      "requests": 0,
+      "runtimeSeconds": 0,
+      "inputTokens": 0,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "outputTokens": 0,
+      "mistakes": {}
+    }
+  ],
+  "stages": {
+    "discover": {
+      "modelRequests": 30,
+      "runtimeSeconds": 451,
+      "snapshotId": null,
+      "output": "Phase 1: Reconnaissance for window 2026-10-11..2026-10-18 UTC. Inspected activity-summary overview (apps/windows), then drilled into: TextEdit tracker.csv accessibility captures, Preview scan-0412..0421.pdf captures, Mail accessibility captures (Atlas timeline + Beacon budget v2 threads), Discord accessibility captures. No existing catalog workflows to compare against (catalogRevision 0, empty workflows list). Found and handed off two distinct candidate jobs to workflow-deepen: (1) receipt/contract scan triage into tracker.csv - scanned PDFs get vendor/date/amount extracted and logged with status flags (duplicate, missing date, review needed) spanning scans 0412-0421; (2) incoming project-attachment filing via Mail - PDF attachment arrives, user saves it to the matching project folder and replies with a filed confirmation, observed twice (Beacon budget v2 from Priya Shah, Atlas timeline from Alex Moreau). Discord activity (#general/#random/#outdoor Weekend Climbers) was reviewed and judged personal/social chat, not a work job, so no draft was created for it. Zen browser windows (sourdough, keyboards, night trains, weather, Rhine water levels, bouldering grades, HN) appear to be personal research browsing with no repeated procedure or outcome, so not drafted. HP Easy Start / Printers & Scanners activity on 2026-10-15 is one-off printer driver setup, folded into evidence for the scan-triage candidate rather than a separate job. Coverage: full 7-day window's top apps/windows inspected vi…\n\nPhase 2: Reconnaissance for window 2026-10-18T00:09:19Z..02:33:43Z (short ~2.4h window). Used /activity-summary for the full window overview (apps/windows), then drilled into accessibility captures for TextEdit (tracker.csv, naming-rule-update.txt), Preview (scan-0422.pdf, scan-0423.pdf), Finder (Paperwork/Inbox listing), Discord (#random Weekend Climbers), and Zen (weather/Rust/bouldering window titles). Findings: (1) the existing receipt/contract scan triage workflow (wf-9a452c05) continued with 2 more occurrences (scan-0422, scan-0423) and underwent a documented naming-convention change (DATE_NAME_TYPE -> TYPE_DATE_NAME) recorded in naming-rule-update.txt and reflected in the new tracker.csv rows plus matching Finder filenames - saved as draft 89f891a3 assigned to workflow-deepen to verify whether the on-disk rename actually happens (addresses a prior open question) and whether the new convention is durable/applies to contracts too. (2) Discord #random chat is personal/social (weekend climbing plans), consistent with the prior cycle's assessment - no draft. (3) Zen browsing (Paris weather, Rust 1.94 release notes, bouldering grades) is personal research with no repeated procedure or outcome - no draft, consistent with prior findings. (4) The other existing workflow (wf-190b3c6c, Mail attachment filing) had no Mail activity in this window to compare against, so it was left untouched. No new distinct work jobs were found in this short window beyond the ongoing scan-triage job. Limita…"
+    },
+    "maintain": {
+      "modelRequests": 23,
+      "runtimeSeconds": 503,
+      "snapshotId": null,
+      "output": "Phase 1: Checked workspace context: catalogRevision=0, workflows=[], drafts=[], researchNotes={}. There are no saved workflows or open maintenance drafts to investigate, correct, or enrich in this cycle (2026-10-11 to 2026-10-18). /feedback is not permitted for this pipe's configured permissions, so no user corrections could be fetched either. No action taken since there is nothing existing to maintain; this is discovery's responsibility to seed the catalog first.\n\nPhase 2: Investigated both existing saved workflows this cycle. (1) wf-9a452c05 Receipt/contract scan triage: searched Finder/Preview/TextEdit OCR across the cycle window and found a material update - naming-rule-update.txt (TextEdit, 2026-10-18T02:14:51Z) documents a naming-convention change from DATE_NAME_TYPE.pdf to TYPE_DATE_NAME.pdf, and two new occurrences (scan-0422, scan-0423, ~02:24-02:29 UTC) confirm it is applied going forward only, while scans 0412-0421 keep the old pattern. Also confirmed via Finder Inbox listing (frame 683, 02:28:11Z) that the renamed PDF actually exists on disk under the new filename, resolving the prior open question about CSV-only vs real rename. Proposed a correction draft (89f891a3, assignee workflow-review) with updated description/variations, 2 new timingRuns, a new rename/file stage with decision+check procedure, and a narrowed openQuestions list. Resubmitted 3 times to fix timestamp/quote precision rejections from Review's validator (truncated microseconds, a quote line not present in the exact frame, a Finder/TextEdit timestamp mixup); the final version was accepted into the queue and is now open awaiting Review. (2) wf-190b3c6c Incoming project-attachment filing via Mail: searched Mail OCR across the full cycle window, found zero new Mail activity, so no correction was supported this cycle - left as-is. No /feedback access permitted for this pipe's configuration, so no written user corrections could be checked directly; userCorrection fields o…"
+    },
+    "deepen": {
+      "modelRequests": 38,
+      "runtimeSeconds": 822,
+      "snapshotId": null,
+      "output": "Phase 1: Both assigned drafts investigated against original Mail/Preview/TextEdit accessibility captures and handed off to workflow-review: (1) Receipt/contract scan triage into tracker.csv - confirmed 6 distinct per-scan sessions across 2026-10-14..17 with real exception handling (missing date, duplicate, over-500 review, ambiguous-type lookup via client-types.txt), 2 timingRuns saved, file-rename-on-disk left as open limitation since Finder was out of scope. (2) Incoming project-attachment filing via Mail - upgraded from 2 to 3 confirmed occurrences (found an earlier Atlas-project-brief instance on 10-14), 3 timingRuns saved with corrected quote/timestamp per Review's rejection feedback. No other candidates were assigned to me this cycle.\n\nPhase 2: Investigated and handed off the single assigned draft (89f891a3) to workflow-review with full verification against original Preview/TextEdit/Finder captures: confirmed naming convention change (DATE_NAME_TYPE -> TYPE_DATE_NAME) via naming-rule-update.txt, confirmed 2 new occurrences (scan-0422, scan-0423) via Preview and tracker.csv, and resolved the long-standing open question about on-disk renaming - Finder Inbox listing shows actual files renamed with Date Modified timestamps matching session time, alongside still-unrenamed scan-0417.pdf. No other drafts assigned this cycle."
+    },
+    "review": {
+      "modelRequests": 20,
+      "runtimeSeconds": 218,
+      "snapshotId": null,
+      "output": null
+    }
+  },
+  "checks": [
+    {
+      "id": "found-p1",
+      "name": "Published: found — receipts",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "A workflow for \"receipts\" gets published.",
+      "actual": "Morgan processes newly scanned receipt/contract PDFs (produced by an HP scanner) one at a time: opens each scan in Preview to read the vendor, date and amount, decides whether it is a receipt or contract (using a client-types.txt reference file when the type is ambiguous), and appends a row to track…",
+      "reason": null,
+      "evidence": [
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
+        "Preview @ 2026-10-16T11:49:08.843+00:00: \"scan-0418.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "no_duplicate-p1",
+      "name": "No duplicate: no_duplicate — receipts",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "Exactly one workflow is published for \"receipts\" — no duplicate.",
+      "actual": "Morgan processes newly scanned receipt/contract PDFs (produced by an HP scanner) one at a time: opens each scan in Preview to read the vendor, date and amount, decides whether it is a receipt or contract (using a client-types.txt reference file when the type is ambiguous), and appends a row to track…",
+      "reason": null,
+      "evidence": [
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
+        "Preview @ 2026-10-16T11:49:08.843+00:00: \"scan-0418.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "steps-p1",
+      "name": "Keyword: steps — receipts",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "Workflow text mentions all of: [rename, renamed, renaming] and [tracker, tracker.csv, csv, log, spreadsheet].",
+      "actual": "Morgan processes newly scanned receipt/contract PDFs (produced by an HP scanner) one at a time: opens each scan in Preview to read the vendor, date and amount, decides whether it is a receipt or contract (using a client-types.txt reference file when the type is ambiguous), and appends a row to track…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"2026-10-05_Acme-Office-Supplies_receipt.pdf\"",
+        "seeded on screen: \"original_file,new_filename,date,amount,type,status,notes\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
+        "Preview @ 2026-10-16T11:49:08.843+00:00: \"scan-0418.pdf · Page 1 of 1\""
+      ],
+      "inStages": false
+    },
+    {
+      "id": "missing_date-p1",
+      "name": "Keyword: missing_date — receipts",
+      "lens": "exception-handling",
+      "passed": true,
+      "expected": "Workflow text mentions any of: missing date, missing-date, no date, unknown-date, unknown date, undated, without a date, date is missing, date missing, lacks a date.",
+      "actual": "Morgan processes newly scanned receipt/contract PDFs (produced by an HP scanner) one at a time: opens each scan in Preview to read the vendor, date and amount, decides whether it is a receipt or contract (using a client-types.txt reference file when the type is ambiguous), and appends a row to track…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"UNKNOWN-DATE_Green-Market_receipt.pdf\"",
+        "seeded on screen: \"missing date\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
+        "Preview @ 2026-10-16T11:49:08.843+00:00: \"scan-0418.pdf · Page 1 of 1\""
+      ],
+      "inStages": false
+    },
+    {
+      "id": "duplicate-p1",
+      "name": "Keyword: duplicate — receipts",
+      "lens": "exception-handling",
+      "passed": true,
+      "expected": "Workflow text mentions any of: duplicate, already filed, already been filed, same as, filed before, previously filed, compare, already exists.",
+      "actual": "Morgan processes newly scanned receipt/contract PDFs (produced by an HP scanner) one at a time: opens each scan in Preview to read the vendor, date and amount, decides whether it is a receipt or contract (using a client-types.txt reference file when the type is ambiguous), and appends a row to track…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"duplicate,same as 2026-10-05_Acme-Office-Supplies_receipt.pdf\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
+        "Preview @ 2026-10-16T11:49:08.843+00:00: \"scan-0418.pdf · Page 1 of 1\""
+      ],
+      "inStages": true
+    },
+    {
+      "id": "high_value-p1",
+      "name": "Keyword: high_value — receipts",
+      "lens": "exception-handling",
+      "passed": true,
+      "expected": "Workflow text mentions any of: review needed, needs review, over 500, above 500, high amount, high-value, high value, large amount, flag.",
+      "actual": "Morgan processes newly scanned receipt/contract PDFs (produced by an HP scanner) one at a time: opens each scan in Preview to read the vendor, date and amount, decides whether it is a receipt or contract (using a client-types.txt reference file when the type is ambiguous), and appends a row to track…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"Amount: 780.00 EUR\"",
+        "seeded on screen: \"review needed\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
+        "Preview @ 2026-10-16T11:49:08.843+00:00: \"scan-0418.pdf · Page 1 of 1\""
+      ],
+      "inStages": true
+    },
+    {
+      "id": "type_lookup-p1",
+      "name": "Keyword: type_lookup — receipts",
+      "lens": "exception-handling",
+      "passed": true,
+      "expected": "Workflow text mentions any of: client-types, client types, client list, unknown type, type is unknown, type unknown, look up the type, looks up the type, lookup.",
+      "actual": "Morgan processes newly scanned receipt/contract PDFs (produced by an HP scanner) one at a time: opens each scan in Preview to read the vendor, date and amount, decides whether it is a receipt or contract (using a client-types.txt reference file when the type is ambiguous), and appends a row to track…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"Type: UNKNOWN\"",
+        "seeded on screen: \"Northwind: contract\"",
+        "seeded on screen: \"2026-10-14_Northwind_contract.pdf\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
+        "Preview @ 2026-10-16T11:49:08.843+00:00: \"scan-0418.pdf · Page 1 of 1\""
+      ],
+      "inStages": true
+    },
+    {
+      "id": "noise_excluded-p1",
+      "name": "Noise excluded: noise_excluded — receipts",
+      "lens": "noise-filtering",
+      "passed": true,
+      "expected": "\"Discord\" is not treated as a step.",
+      "actual": "Morgan processes newly scanned receipt/contract PDFs (produced by an HP scanner) one at a time: opens each scan in Preview to read the vendor, date and amount, decides whether it is a receipt or contract (using a client-types.txt reference file when the type is ambiguous), and appends a row to track…",
+      "reason": null,
+      "evidence": [
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
+        "Preview @ 2026-10-16T11:49:08.843+00:00: \"scan-0418.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "email_separate-p1",
+      "name": "Kept separate: email_separate — email",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "\"email\" stays a separate workflow from \"receipts\" (not merged).",
+      "actual": "When a project collaborator emails a PDF attachment, Morgan reads the request, saves the attachment into the matching project folder, and replies with a short confirmation that the file was filed. Observed twice this week for two different projects and senders.",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"Atlas-project-brief.pdf\"",
+        "seeded on screen: \"Beacon-budget-v2.pdf\"",
+        "seeded on screen: \"Atlas-timeline.pdf\"",
+        "Mail @ 2026-10-16T10:41:35.028+00:00: \"Get Mail · Compose\"",
+        "Mail @ 2026-10-17T12:24:14.622+00:00: \"Get Mail · Compose\"",
+        "Mail @ 2026-10-16T10:41:20.343+00:00: \"Get Mail · Compose\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "one_off_unpublished-p1",
+      "name": "Stays unpublished: one_off_unpublished — printer",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "\"printer\" is a one-off — it should NOT be published.",
+      "actual": "No workflow published for \"printer\" (correct).",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"Printers & Scanners\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "evidence_resolves-p1",
+      "name": "Evidence: evidence_resolves",
+      "lens": "evidence-validity",
+      "passed": true,
+      "expected": "Every citation in every published workflow resolves to a real seeded frame.",
+      "actual": "2 workflow(s) in the published catalog this phase.",
+      "reason": null,
+      "evidence": null,
+      "inStages": null
+    },
+    {
+      "id": "drift-p2",
+      "name": "Drift: drift — receipts",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "The existing \"receipts\" workflow adapts in place (not forked) to mention: TYPE_DATE_NAME, type first, type, date, type_date_name, receipt_2026-10-15_Hardware-Store.pdf.",
+      "actual": "Morgan processes newly scanned receipt/contract PDFs (produced by an HP scanner) one at a time: opens each scan in Preview to read the vendor, date and amount, decides whether it is a receipt or contract (using a client-types.txt reference file when the type is ambiguous), and appends a row to track…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"New: TYPE_DATE_NAME.pdf\"",
+        "seeded on screen: \"receipt_2026-10-15_Hardware-Store.pdf\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
+        "Preview @ 2026-10-16T11:49:08.843+00:00: \"scan-0418.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "evidence_resolves-p2",
+      "name": "Evidence: evidence_resolves",
+      "lens": "evidence-validity",
+      "passed": true,
+      "expected": "Every citation in every published workflow resolves to a real seeded frame.",
+      "actual": "2 workflow(s) in the published catalog this phase.",
+      "reason": null,
+      "evidence": null,
+      "inStages": null
+    },
+    {
+      "id": "evidence_resolves-p3",
+      "name": "Evidence: evidence_resolves",
+      "lens": "evidence-validity",
+      "passed": true,
+      "expected": "Every citation in every published workflow resolves to a real seeded frame.",
+      "actual": "2 workflow(s) in the published catalog this phase.",
+      "reason": null,
+      "evidence": null,
+      "inStages": null
+    }
+  ],
+  "workflows": [
+    {
+      "id": "wf-0",
+      "title": "Receipt/contract scan triage into tracker.csv",
+      "steps": [
+        "Read scan in Preview",
+        "Disambiguate document type when unclear",
+        "Apply/update naming convention and log row in tracker.csv"
+      ],
+      "matchedTo": "receipts",
+      "trigger": "A new scanned PDF (scan-0412.pdf .. scan-0423.pdf) appears, produced by an HP scanner set up via HP Easy Start / Printers & Scanners on 2026-10-15",
+      "outcome": "tracker.csv accumulates one row per scan with extracted date/amount/type and a status/notes flag for exceptions, and the original PDF is renamed/moved on disk to the logged new_filename; by 2026-10-18T02:29:05Z it held 12 rows covering scans 0412-0423, with the last two (scan-0422, scan-0423) using a newly adopted TYPE_DATE_NAME.pdf naming convention instead of the earlier DATE_NAME_TYPE.pdf conve",
+      "variations": [
+        "When the type is ambiguous, Morgan opens a separate client-types.txt reference file before logging the row (scan-0420, 2026-10-17T10:11:38Z-10:13:33Z)",
+        "Duplicate charges are cross-referenced against an already-logged row rather than filed normally (scan-0417)",
+        "From 2026-10-18, the proposed new_filename convention changed from DATE_NAME_TYPE.pdf to TYPE_DATE_NAME.pdf per naming-rule-update.txt (edited 2026-10-18T02:14:51-02:15:24Z); scan-0422 and scan-0423 are the first two rows logged under the new convention"
+      ],
+      "limitations": [
+        "HP printer driver setup (2026-10-15) is one-off configuration context, not part of the recurring triage procedure itself",
+        "No single ordered capture example covers every step of one occurrence end-to-end; procedure is reconstructed from multiple overlapping captures",
+        "The on-disk rename is now confirmed via Finder Date Modified correlation (18 Oct 2026 for the two newest files, matching session time) but the exact OS-level action (Save As, Finder rename, or script) was not directly observed in a capture",
+        "No ordered capture example covers every step. These references do not establish one end-to-end occurrence."
+      ],
+      "confidence": 4
+    },
+    {
+      "id": "wf-1",
+      "title": "Incoming project-attachment filing via Mail",
+      "steps": [
+        "Read incoming request",
+        "Save attachment to project folder",
+        "Send confirmation reply"
+      ],
+      "matchedTo": "email",
+      "trigger": "Email arrives with a PDF attachment tied to an ongoing project",
+      "outcome": "PDF saved into the correct project folder plus a confirmation reply sent in the same session",
+      "variations": [
+        "Confirmation wording differs per instance ('Thanks Priya, filed in the Beacon folder. Morgan' vs 'Saved next to the brief. Thanks Alex')"
+      ],
+      "limitations": [
+        "Only 2 occurrences observed in this week's capture window, both reconstructed from Mail accessibility text; the actual Save-As dialog / folder-picker interaction was not independently captured in OCR text, only inferred from the reply content",
+        "No Finder evidence was captured to confirm the file landed in the stated folder on disk",
+        "No ordered capture example covers every step. These references do not establish one end-to-end occurrence."
+      ],
+      "confidence": 3
+    }
+  ]
+}

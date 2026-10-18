@@ -1,0 +1,164 @@
+{
+  "format": "pipeops.review",
+  "formatVersion": 1,
+  "kind": "llm-judge",
+  "baselineRunId": "20261018T020827Z-baseline-receipts-s1-r5",
+  "variantRunId": "20261018T020907Z-idle-skip-receipts-s1-r1",
+  "judgments": 12,
+  "pairs": [
+    {
+      "pair": "p1-email",
+      "phase": 1,
+      "job": "email",
+      "verdict": "baseline",
+      "strengths": [
+        "strong",
+        "strong"
+      ],
+      "correctness": {
+        "baseline": 3,
+        "variant": 2.5
+      }
+    },
+    {
+      "pair": "p1-receipts",
+      "phase": 1,
+      "job": "receipts",
+      "verdict": "baseline",
+      "strengths": [
+        "clear",
+        "clear"
+      ],
+      "correctness": {
+        "baseline": 4,
+        "variant": 2.5
+      }
+    },
+    {
+      "pair": "p2-email",
+      "phase": 2,
+      "job": "email",
+      "verdict": "baseline",
+      "strengths": [
+        "strong",
+        "strong"
+      ],
+      "correctness": {
+        "baseline": 3.38,
+        "variant": 2.13
+      }
+    },
+    {
+      "pair": "p2-receipts",
+      "phase": 2,
+      "job": "receipts",
+      "verdict": "baseline",
+      "strengths": [
+        "clear",
+        "clear"
+      ],
+      "correctness": {
+        "baseline": 3.75,
+        "variant": 3
+      }
+    },
+    {
+      "pair": "p3-email",
+      "phase": 3,
+      "job": "email",
+      "verdict": "baseline",
+      "strengths": [
+        "strong",
+        "strong"
+      ],
+      "correctness": {
+        "baseline": 4.13,
+        "variant": 2.25
+      }
+    },
+    {
+      "pair": "p3-receipts",
+      "phase": 3,
+      "job": "receipts",
+      "verdict": "baseline",
+      "strengths": [
+        "slight",
+        "slight"
+      ],
+      "correctness": {
+        "baseline": 3.63,
+        "variant": 3.5
+      }
+    }
+  ],
+  "summary": {
+    "baseline": 6,
+    "variant": 0,
+    "inconsistent": 0
+  },
+  "means": {
+    "faithful": {
+      "baseline": 3.67,
+      "variant": 2.5,
+      "n": 12
+    },
+    "procedure": {
+      "baseline": 3.33,
+      "variant": 2.33,
+      "n": 12
+    },
+    "exceptions": {
+      "baseline": 3.67,
+      "variant": 2.75,
+      "n": 12
+    },
+    "rule_change": {
+      "baseline": 4.13,
+      "variant": 3.25,
+      "n": 8
+    },
+    "usable": {
+      "baseline": 3.58,
+      "variant": 2.33,
+      "n": 12
+    },
+    "calibration": {
+      "baseline": 3.33,
+      "variant": 2.5,
+      "n": 12
+    },
+    "numbers": {
+      "baseline": 3.5,
+      "variant": 2.17,
+      "n": 12
+    },
+    "clarity": {
+      "baseline": 3.75,
+      "variant": 3.67,
+      "n": 12
+    }
+  },
+  "method": {
+    "describedIn": "eval/EXPERIMENTS.md · LLM judge",
+    "note": "Each workflow document of the pair was judged twice, with the two documents swapped; a preference counts only when both orders agree. Judges are the same model family that wrote both documents."
+  },
+  "source": {
+    "generatedBy": "pipeops/scripts/import-judge.mjs",
+    "sha256": {
+      "key.json": "3b25661fe1ce43a6134fed4bb072bd984f8fa57690b035fbe073575de9e90cbf",
+      "build.py": "f78aa2f1e8083de62b5a1926978fb68bd6a6a3cd19dc1ce1ef3d0fefbe9ad40e",
+      "results/j01.json": "6a72002544dc254c90e9aec2b7902eb2ac630812e639563a8960587c355f77ae",
+      "results/j02.json": "72aa431386a5b7f416891d109abfa992e02bba54e2ac3bccdbe618c327bf1df9",
+      "results/j03.json": "0042f2785478b222645c1162f460d910dda2a92d4c73db7338f9aa014d8ad240",
+      "results/j04.json": "7267ededb7d330e4a1eac148d7e0f7a626a72a64284f4c788b9dd4e9ac9122e6",
+      "results/j05.json": "568dc9bb301483585ba14d19f2c79167adef458d33e8c74d29d5adcb38dc0ccd",
+      "results/j06.json": "4d94be46ae95a9759b8042710bf1ce76b7a08c365602ec94f8dfaa465e1e0bb7",
+      "results/j07.json": "e285c53bf944c614aa1641e5c1b1002862f53145feff646cd00110c495a4bfbb",
+      "results/j08.json": "5947f78e18fb6231ccb260ae40391ba0604be1470ac61e644a8a8474e29d7620",
+      "results/j09.json": "9b41c6453be1ddffab99058239a03194c61f0ace8f27a46b22cd1d8142ea65d8",
+      "results/j10.json": "caad77699b05bbc2140f1e0afd0b766ad0568946a36c8a7a153797ee59af94bd",
+      "results/j11.json": "55be5079886ce77e1f7aafceab03a599b390c1bf345c755601692145882502d7",
+      "results/j12.json": "a111eebf2ab7120e1814e9e2ec618f9a24d20c4d3e5450ade9edd0725894e085"
+    }
+  }
+}

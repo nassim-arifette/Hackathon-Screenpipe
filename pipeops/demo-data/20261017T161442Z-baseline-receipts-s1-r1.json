@@ -2,7 +2,7 @@
   "format": "pipeops.run",
   "formatVersion": 1,
   "kind": "full",
-  "exportedAt": "2026-10-17T22:41:08.412Z",
+  "exportedAt": "2026-10-18T10:02:46.504Z",
   "run": {
     "id": "20261017T161442Z-baseline-receipts-s1-r1",
     "label": "baseline",
@@ -85,6 +85,7 @@
     "qualityTotal": 11,
     "modelRequests": 89,
     "runtimeSeconds": 650,
+    "failedCalls": null,
     "costUsd": null
   },
   "modelUsage": {
@@ -125,6 +126,22 @@
       }
     }
   },
+  "phases": [
+    {
+      "phase": 1,
+      "cycleStatus": "complete",
+      "frames": 586,
+      "checksPassed": 11,
+      "checksScored": 11,
+      "requests": 89,
+      "runtimeSeconds": 650,
+      "inputTokens": 187643,
+      "cacheReadTokens": 3715310,
+      "cacheWriteTokens": 0,
+      "outputTokens": 64007,
+      "mistakes": {}
+    }
+  ],
   "stages": {
     "discover": {
       "modelRequests": 14,
@@ -164,7 +181,8 @@
         "Preview @ 2026-10-16T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Preview @ 2026-10-16T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "no_duplicate-p1",
@@ -178,7 +196,8 @@
         "Preview @ 2026-10-16T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Preview @ 2026-10-16T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "steps-p1",
@@ -194,7 +213,8 @@
         "Preview @ 2026-10-16T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Preview @ 2026-10-16T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "missing_date-p1",
@@ -210,7 +230,8 @@
         "Preview @ 2026-10-16T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Preview @ 2026-10-16T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "duplicate-p1",
@@ -225,7 +246,8 @@
         "Preview @ 2026-10-16T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Preview @ 2026-10-16T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "high_value-p1",
@@ -241,7 +263,8 @@
         "Preview @ 2026-10-16T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Preview @ 2026-10-16T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "type_lookup-p1",
@@ -258,7 +281,8 @@
         "Preview @ 2026-10-16T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Preview @ 2026-10-16T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "noise_excluded-p1",
@@ -272,7 +296,8 @@
         "Preview @ 2026-10-16T10:10:51.036+00:00: \"scan-0420.pdf · Page 1 of 1\"",
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Preview @ 2026-10-16T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "email_separate-p1",
@@ -289,7 +314,8 @@
         "Preview @ 2026-10-15T10:40:21.562+00:00: \"Beacon-budget-v2.pdf · Page 1 of 1\"",
         "Mail @ 2026-10-16T12:24:26.389+00:00: \"Get Mail · Compose\"",
         "Mail @ 2026-10-16T12:22:37.505+00:00: \"Get Mail · Compose\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "one_off_unpublished-p1",
@@ -301,7 +327,8 @@
       "reason": null,
       "evidence": [
         "seeded on screen: \"Printers & Scanners\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "evidence_resolves-p1",
@@ -311,7 +338,8 @@
       "expected": "Every citation in every published workflow resolves to a real seeded frame.",
       "actual": "2 workflow(s) in the published catalog this phase.",
       "reason": null,
-      "evidence": null
+      "evidence": null,
+      "inStages": null
     }
   ],
   "workflows": [

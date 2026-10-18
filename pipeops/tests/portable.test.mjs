@@ -9,7 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { exportRun, validatePortable, readPortableFile, portableToRawRun, scanForSecrets, conditionsKey } from '../server/portable.mjs';
-import { listRuns, buildExperimentBundle, loadRunArtifacts } from '../server/convert.mjs';
+import { listRuns, listStageResults, buildExperimentBundle, loadRunArtifacts, toRawRun } from '../server/convert.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const demoDir = path.join(root, 'demo-data');
@@ -53,6 +53,21 @@ test('demo files render identically to the Local Runs conversion (modulo disclos
     const again = await exportRun(runsDir, doc.run.id);
     assert.deepEqual({ ...again, exportedAt: 0 }, { ...doc, exportedAt: 0 });
   }
+});
+
+test('baseline r5 and idle-skip r1 are one comparable pair; their phases add up to the run totals', async () => {
+  const docs = await Promise.all(['20261018T020827Z-baseline-receipts-s1-r5', '20261018T020907Z-idle-skip-receipts-s1-r1'].map((id) => readPortableFile(path.join(demoDir, `${id}.json`))));
+  const [a, b] = docs;
+  assert.notEqual(a.conditions.repeat, b.conditions.repeat); // replicate numbers differ...
+  assert.equal(conditionsKey(a.conditions), conditionsKey(b.conditions)); // ...the test they ran does not
+  for (const d of docs) {
+    assert.equal(d.phases.reduce((s, p) => s + p.requests, 0), d.metrics.modelRequests);
+    assert.equal(d.phases.reduce((s, p) => s + p.runtimeSeconds, 0), d.metrics.runtimeSeconds);
+  }
+  const p3 = (d) => d.phases.find((p) => p.phase === 3);
+  assert.equal(p3(a).requests, 56);
+  assert.equal(p3(b).requests, 0);
+  assert.equal(p3(b).cycleStatus, 'idle');
 });
 
 test('export keeps only allowlisted content: no engine log, host paths or secrets', async () => {
@@ -101,6 +116,100 @@ test('validator rejects bad shape, stage kind, unknown keys, mismatched totals a
   has(clone(), /file name must be/, { fileName: 'other.json' });
   const c = clone(); delete c.conditions.dataSha256; has(c, /dataSha256/);
   assert.ok(validatePortable(null).length);
+});
+
+/** A full multi-phase run dir with controllable per-phase requests/seconds, idle churn and
+ *  refused-call counts. Same conditions on both sides so buildExperimentBundle will pair them. */
+async function multiPhaseRun(runsDir, id, { variant, phases }) {
+  const d = path.join(runsDir, id);
+  await mkdir(d, { recursive: true });
+  const run = { run_id: id, variant: { name: variant, preset: { provider: 'p', model: 'm' } },
+    data: { suite: 's', seed: 1, sha256: { 'truth.json': 'aa' } }, started_at: 'a', finished_at: 'b' };
+  await writeFile(path.join(d, 'run.json'), JSON.stringify(run));
+  const rows = phases.map((p) => ({
+    variant, suite: 's', seed: 1, repeat: 1, phase: p.phase, status: 'graded',
+    passed: p.passed, scored: p.scored, seconds: p.seconds,
+    checks: { c1: { pass: p.passed > 0 } }, workflows_by_job: {},
+    ...(p.idleChurn ? { mistakes: { idle_churn: 2 } } : {}),
+    usage: { requests: p.requests, agent_runs: p.agentRuns ?? 0,
+      ...(p.failed != null ? { workspace: { failed: p.failed } } : {}) },
+  }));
+  await writeFile(path.join(d, 'results.jsonl'), rows.map((r) => JSON.stringify(r)).join('\n') + '\n');
+  await writeFile(path.join(d, 'truth.json'), JSON.stringify({ checks: [{ id: 'c1', kind: 'published', job: 'j' }], jobs: { j: { expect: 'published', summary: 'Job J' } } }));
+  return d;
+}
+
+test('phases: per-phase totals read straight from results rows, idle churn and refused calls flagged', async () => {
+  const tmp = await mkdtemp(path.join(os.tmpdir(), 'pipeops-'));
+  const phases = [
+    { phase: 1, passed: 1, scored: 1, seconds: 300, requests: 57, agentRuns: 12, failed: 2 },
+    { phase: 2, passed: 1, scored: 1, seconds: 270, requests: 54, agentRuns: 9, failed: 0 },
+    { phase: 3, passed: 1, scored: 1, seconds: 0, requests: 0, agentRuns: 0, idleChurn: true, failed: 0 },
+  ];
+  await multiPhaseRun(tmp, 'mp', { variant: 'idle-skip', phases });
+  const { toRawRun } = await import('../server/convert.mjs');
+  const raw = toRawRun('mp', 'idle-skip', 'variant', await loadRunArtifacts(tmp, 'mp'));
+  assert.equal(raw.phases.length, 3);
+  assert.deepEqual(raw.phases.map((p) => p.requests), [57, 54, 0]);
+  assert.ok(raw.phases[2].mistakes.idle_churn > 0);
+  assert.equal(raw.phases[0].mistakes, null);
+  assert.equal(raw.metrics.failedCalls, 2); // summed over phases
+  assert.equal(raw.metrics.modelRequests, 111); // phase totals add up to the run total
+  await rm(tmp, { recursive: true, force: true });
+});
+
+test('failedCalls is null when no phase carries workspace.failed (run predates the logging)', async () => {
+  const tmp = await mkdtemp(path.join(os.tmpdir(), 'pipeops-'));
+  await multiPhaseRun(tmp, 'old', { variant: 'baseline', phases: [{ phase: 1, passed: 1, scored: 1, seconds: 3, requests: 5 }] });
+  const { toRawRun } = await import('../server/convert.mjs');
+  const raw = toRawRun('old', 'baseline', 'baseline', await loadRunArtifacts(tmp, 'old'));
+  assert.equal(raw.metrics.failedCalls, null);
+  await rm(tmp, { recursive: true, force: true });
+});
+
+test('verdict is direction-aware: fewer requests reads as an efficiency gain, more as no improvement', async () => {
+  const tmp = await mkdtemp(path.join(os.tmpdir(), 'pipeops-'));
+  const base = [{ phase: 1, passed: 1, scored: 1, seconds: 100, requests: 100 }];
+  const cheaper = [{ phase: 1, passed: 1, scored: 1, seconds: 60, requests: 50 }];
+  await multiPhaseRun(tmp, 'base', { variant: 'baseline', phases: base });
+  await multiPhaseRun(tmp, 'cheap', { variant: 'idle-skip', phases: cheaper });
+  const win = buildExperimentBundle({
+    baselineId: 'base', baselineLabel: 'baseline', baselineArtifacts: await loadRunArtifacts(tmp, 'base'),
+    variantId: 'cheap', variantLabel: 'idle-skip', variantArtifacts: await loadRunArtifacts(tmp, 'cheap'),
+  });
+  assert.match(win.comparison.verdict, /efficiency improved/i);
+  assert.match(win.comparison.verdict, /document quality needs further validation/i); // same checks is not the same documents
+  assert.match(win.comparison.note, /-50%|−50%/); // relative request drop stated
+  const regress = buildExperimentBundle({
+    baselineId: 'cheap', baselineLabel: 'idle-skip', baselineArtifacts: await loadRunArtifacts(tmp, 'cheap'),
+    variantId: 'base', variantLabel: 'baseline', variantArtifacts: await loadRunArtifacts(tmp, 'base'),
+  });
+  assert.match(regress.comparison.verdict, /no improvement/i);
+  await rm(tmp, { recursive: true, force: true });
+});
+
+test('portable round-trips phases and validates their shape; rejects malformed ones', async () => {
+  const tmp = await mkdtemp(path.join(os.tmpdir(), 'pipeops-'));
+  await multiPhaseRun(tmp, 'rt', { variant: 'idle-skip', phases: [
+    { phase: 1, passed: 1, scored: 1, seconds: 300, requests: 57, failed: 1 },
+    { phase: 2, passed: 1, scored: 1, seconds: 270, requests: 54, failed: 0 },
+  ] });
+  const doc = await exportRun(tmp, 'rt');
+  assert.equal(doc.run.id, 'rt');
+  assert.equal(doc.phases.length, 2);
+  assert.equal(doc.metrics.failedCalls, 1);
+  assert.deepEqual(validatePortable(doc, { fileName: 'rt.json' }), []);
+  // a portable file maps back to a run carrying the phases
+  const loaded = portableToRawRun(doc, 'variant');
+  assert.equal(loaded.phases.length, 2);
+  // malformed: a negative number, a list that does not match conditions.phases, totals that do not add up
+  const bad = structuredClone(doc); bad.phases[0].requests = -1;
+  assert.ok(validatePortable(bad, { fileName: 'rt.json' }).some((e) => /non-negative/.test(e)));
+  const short = structuredClone(doc); short.phases.pop();
+  assert.ok(validatePortable(short, { fileName: 'rt.json' }).some((e) => /conditions\.phases/.test(e)));
+  const off = structuredClone(doc); off.phases[0].requests += 50;
+  assert.ok(validatePortable(off, { fileName: 'rt.json' }).some((e) => /do not add up/.test(e)));
+  await rm(tmp, { recursive: true, force: true });
 });
 
 test('security scan flags credentials, tokens, host paths and emails', () => {
@@ -152,7 +261,7 @@ test('server: Demo Runs work without eval/runs/; new valid files appear; invalid
     assert.deepEqual((await get('/api/runs')).body, []); // Local Runs: empty, not an error
     const demos = (await get('/api/demo-runs')).body;
     assert.equal(demos.length, demoFiles.length);
-    const base = demos.find((r) => r.variant === 'baseline'), variant = demos.find((r) => r.variant === 'episode-routing');
+    const base = demos.find((r) => r.variant === 'baseline' && r.phases.length === 1), variant = demos.find((r) => r.variant === 'episode-routing');
     assert.equal(base.conditions, variant.conditions);
     const exp = await get(`/api/demo-experiment?baseline=${base.id}&variant=${variant.id}`);
     assert.equal(exp.status, 200);
@@ -193,4 +302,51 @@ test('portableToRawRun maps cleanly to the UI shape', async () => {
   assert.equal(raw.status, 'recorded');
   assert.ok(raw.checks.length && raw.groundTruth.length && raw.generatedWorkflows.length);
   assert.ok(conditionsKey({}) .length);
+});
+
+test('eval fields reach the UI: phase cycle, per-check in_stages, and they round-trip the portable format', async () => {
+  const runsDir = await mkdtemp(path.join(os.tmpdir(), 'pipeops-runs-'));
+  const id = '20261018T000000Z-v-s-s1-r1';
+  const d = await fakeRun(runsDir, id);
+  const row = JSON.parse((await readFile(path.join(d, 'results.jsonl'), 'utf8')).trim());
+  row.checks.c1.in_stages = false;
+  const idle = { ...row, phase: 3, cycle: 'idle', passed: 0, scored: 0, checks: {}, seconds: 0, usage: { ...row.usage, requests: 0 } };
+  await writeFile(path.join(d, 'results.jsonl'), [JSON.stringify({ ...row, cycle: 'complete' }), JSON.stringify(idle)].join('\n') + '\n');
+  await mkdir(path.join(d, 'phase3'), { recursive: true });
+  await writeFile(path.join(d, 'phase3/phase.json'), JSON.stringify({}));
+  const run = toRawRun(id, 'v', 'baseline', await loadRunArtifacts(runsDir, id));
+  assert.deepEqual(run.phases.map((p) => p.cycleStatus), ['complete', 'idle']);
+  assert.equal(run.checks[0].inStages, false);
+  const doc = await exportRun(runsDir, id);
+  assert.deepEqual(validatePortable(doc), []);
+  const back = portableToRawRun(doc, 'variant');
+  assert.equal(back.phases[1].cycleStatus, 'idle');
+  assert.equal(back.checks[0].inStages, false);
+  await rm(runsDir, { recursive: true });
+});
+
+test('stage runs are summarised from results.jsonl, apart from full runs', async () => {
+  const runsDir = await mkdtemp(path.join(os.tmpdir(), 'pipeops-runs-'));
+  await fakeRun(runsDir, '20261018T000000Z-v-s-s1-r1'); // a full run: not a stage run
+  const sd = path.join(runsDir, '20261018T010000Z-clearer-stage-review-04-r1');
+  await mkdir(sd, { recursive: true });
+  await writeFile(path.join(sd, 'run.json'), JSON.stringify({ kind: 'stage', task: 'workflow-review', variant: { name: 'clearer' }, started_at: 't' }));
+  await writeFile(path.join(sd, 'stage.json'), '{}');
+  await writeFile(path.join(sd, 'results.jsonl'), JSON.stringify({
+    variant: 'clearer', stage: 'workflow-deepen+workflow-review', snapshot: 'snap/03-p1-workflow-deepen', phase: 1, view: 'catalog',
+    status: 'done', passed: 11, scored: 11, seconds: 141.6, in_stages: 5, keyword_checks: 6,
+    before: { drafts: { score: 1 }, catalog: { score: 0 } }, clipped: { fields: 2, chars: 40, where: {} },
+    usage: { requests: 30, output: 13000, workspace: { failed: 1 }, by_task: { 'workflow-deepen': { requests: 12 }, 'workflow-review': { requests: 18 } } },
+  }) + '\n');
+  await mkdir(path.join(runsDir, '20261018T020000Z-aborted'), { recursive: true }); // no files: skipped
+  const list = await listStageResults(runsDir, await readdir(runsDir));
+  assert.equal(list.length, 1);
+  assert.deepEqual(
+    { ...list[0], id: undefined },
+    { id: undefined, variant: 'clearer', tasks: ['workflow-deepen', 'workflow-review'], snapshot: 'snap/03-p1-workflow-deepen', phase: 1,
+      view: 'catalog', status: 'done', passed: 11, scored: 11, scoreBefore: 0, requests: 30, seconds: 142, output: 13000, failedCalls: 1,
+      byTask: { 'workflow-deepen': 12, 'workflow-review': 18 }, clipped: { fields: 2, chars: 40 }, inStages: 5, keywordChecks: 6,
+      truth: null, startedAt: 't' },
+  );
+  await rm(runsDir, { recursive: true });
 });

@@ -27,7 +27,7 @@ export function StepRail({ step, loaded, onStep }: { step: number; loaded: boole
                 }`}
               >
                 <span
-                  className={`relative flex h-7 w-7 items-center justify-center rounded-full border font-mono text-[11px] transition ${
+                  className={`relative flex h-7 w-7 items-center justify-center rounded-full border font-mono text-[13px] transition ${
                     active
                       ? 'border-signal bg-signal text-on-signal'
                       : done
@@ -45,8 +45,8 @@ export function StepRail({ step, loaded, onStep }: { step: number; loaded: boole
                   )}
                 </span>
                 <span
-                  className={`whitespace-nowrap text-[14px] transition ${
-                    active ? 'font-medium text-ink-50' : locked ? 'text-ink-500' : 'text-ink-300 group-hover:text-ink-100'
+                  className={`whitespace-nowrap text-[16.5px] transition ${
+                    active ? 'font-medium text-ink-50' : locked ? 'text-ink-400' : 'text-ink-300 group-hover:text-ink-100'
                   }`}
                 >
                   {s.label}
@@ -66,7 +66,7 @@ export function StepRail({ step, loaded, onStep }: { step: number; loaded: boole
           );
         })}
       </nav>
-      <div className="flex items-center gap-5 font-mono text-[11px] text-ink-400">
+      <div className="flex items-center gap-5 font-mono text-[13px] text-ink-400">
         <span className="flex items-center gap-1.5">
           <Kbd>←</Kbd>
           <Kbd>→</Kbd> steps
@@ -74,25 +74,8 @@ export function StepRail({ step, loaded, onStep }: { step: number; loaded: boole
         <span className="flex items-center gap-1.5">
           <Kbd>space</Kbd> play
         </span>
-        <span className="h-4 w-px bg-ink-700" />
-        <Legend />
       </div>
     </footer>
   );
 }
 
-function Legend() {
-  return (
-    <span className="flex items-center gap-4">
-      <span className="flex items-center gap-1.5">
-        <span className="h-[3px] w-5 rounded bg-ink-100" /> recorded
-      </span>
-      <span className="flex items-center gap-1.5">
-        <span className="h-0 w-5 border-t border-dashed border-ink-400" /> not in artifact
-      </span>
-      <span className="flex items-center gap-1.5">
-        <span className="hatch h-2.5 w-5 rounded-sm border border-signal/50" /> preview
-      </span>
-    </span>
-  );
-}

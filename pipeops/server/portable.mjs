@@ -94,7 +94,7 @@ export async function exportRun(runsDir, runId, { now = new Date() } = {}) {
   const raw = toRawRun(runId, run.variant?.name ?? runId, 'baseline', artifacts);
   const checks = (raw.checks ?? []).map((c) => ({
     id: c.id, name: c.name, lens: c.lens, passed: c.passed,
-    expected: c.expected, actual: c.actual, reason: c.reason, evidence: c.evidence,
+    expected: c.expected, actual: c.actual, reason: c.reason, evidence: c.evidence, inStages: c.inStages ?? null,
   }));
   const workflows = (raw.generatedWorkflows ?? []).map((w) => ({
     id: w.id, title: w.title, steps: w.steps ?? null, matchedTo: w.matchedTo ?? null,
@@ -142,6 +142,7 @@ export async function exportRun(runsDir, runId, { now = new Date() } = {}) {
     metrics: { ...raw.metrics, costUsd: results.some((r) => r.usage?.cost_usd != null)
       ? results.reduce((s, r) => s + (r.usage?.cost_usd ?? 0), 0) : null },
     modelUsage: { total: sumTokens(results), byTask: usageByTask(results) },
+    phases: raw.phases,
     stages: raw.stages,
     checks,
     workflows,
@@ -155,7 +156,7 @@ export async function exportRun(runsDir, runId, { now = new Date() } = {}) {
 /* --------------------------- validation --------------------------- */
 
 const TOP_KEYS = ['format', 'formatVersion', 'kind', 'exportedAt', 'run', 'conditions', 'provenance',
-  'groundTruth', 'metrics', 'modelUsage', 'stages', 'checks', 'workflows'];
+  'groundTruth', 'metrics', 'modelUsage', 'phases', 'stages', 'checks', 'workflows'];
 
 // Anything matching these must never ship. Patterns are for credentials and host-specific paths;
 // sha256 hashes (hex) are legitimate provenance and are not flagged.
@@ -200,7 +201,7 @@ export function validatePortable(doc, { fileName } = {}) {
   need(doc.formatVersion === FORMAT_VERSION, `formatVersion must be ${FORMAT_VERSION} (this tool only reads v${FORMAT_VERSION})`);
   need(doc.kind === 'full', 'kind must be "full" — stage runs are not supported and must not be scored as full evaluations');
   for (const k of Object.keys(doc)) need(TOP_KEYS.includes(k), `unexpected top-level key "${k}" (allowlist)`);
-  for (const k of TOP_KEYS) need(k in doc, `missing top-level key "${k}"`);
+  for (const k of TOP_KEYS) if (k !== 'phases') need(k in doc, `missing top-level key "${k}"`); // phases: added later, optional
   if (errs.length && !isObj(doc.run)) return errs;
 
   need(isObj(doc.run) && typeof doc.run.id === 'string' && /^[\w.-]+$/.test(doc.run.id), 'run.id must be a safe id string');
@@ -217,13 +218,16 @@ export function validatePortable(doc, { fileName } = {}) {
   const ints = ['qualityPassed', 'qualityTotal', 'modelRequests', 'runtimeSeconds'];
   need(isObj(m) && ints.every((k) => typeof m[k] === 'number' && m[k] >= 0), `metrics must have non-negative numbers: ${ints.join(', ')}`);
   need(isObj(m) && isNullOr(m.costUsd, 'number'), 'metrics.costUsd must be a number or null');
+  need(isObj(m) && (m.failedCalls === undefined || isNullOr(m.failedCalls, 'number')), 'metrics.failedCalls must be a number, null, or absent');
   need(isObj(doc.modelUsage) && isObj(doc.modelUsage.total) && isObj(doc.modelUsage.byTask), 'modelUsage needs total and byTask objects');
   need(isObj(doc.stages), 'stages must be an object');
+  if (doc.phases !== undefined) errs.push(...validatePhases(doc));
 
   if (Array.isArray(doc.checks)) {
     const okShape = doc.checks.every((k) => isObj(k) && typeof k.id === 'string' && typeof k.passed === 'boolean'
       && isNullOr(k.name, 'string') && isNullOr(k.lens, 'string') && isNullOr(k.expected, 'string')
       && isNullOr(k.actual, 'string') && isNullOr(k.reason, 'string')
+      && (k.inStages === undefined || isNullOr(k.inStages, 'boolean'))
       && (k.evidence === null || (Array.isArray(k.evidence) && k.evidence.every((e) => typeof e === 'string'))));
     need(okShape, 'every check needs {id, passed:boolean} and string-or-null name/lens/expected/actual/reason, string[]-or-null evidence');
     if (okShape && isObj(m)) {
@@ -234,6 +238,25 @@ export function validatePortable(doc, { fileName } = {}) {
   need(Array.isArray(doc.workflows) && doc.workflows.every((w) => isObj(w) && typeof w.id === 'string' && typeof w.title === 'string'), 'workflows must be [{id,title,…}]');
 
   for (const f of scanForSecrets(doc)) errs.push(`security: ${f}`);
+  return errs;
+}
+
+const PHASE_NUMBERS = ['frames', 'checksPassed', 'checksScored', 'requests', 'runtimeSeconds', 'inputTokens', 'cacheReadTokens', 'cacheWriteTokens', 'outputTokens'];
+
+/** `phases` is optional (older files have none), but when present it must agree with the totals. */
+function validatePhases(doc) {
+  const errs = [];
+  const ps = doc.phases;
+  if (!Array.isArray(ps)) return ['phases must be an array'];
+  const ok = ps.every((p) => isObj(p) && Number.isInteger(p.phase) && isNullOr(p.cycleStatus, 'string')
+    && PHASE_NUMBERS.every((k) => p[k] === null || (typeof p[k] === 'number' && p[k] >= 0)) && (p.mistakes === null || isObj(p.mistakes)));
+  if (!ok) return ['every phase needs an integer `phase` and non-negative number-or-null fields'];
+  if (JSON.stringify(ps.map((p) => p.phase)) !== JSON.stringify(doc.conditions.phases)) errs.push('phases must list the same phases as conditions.phases');
+  for (const [field, total] of [['requests', doc.metrics.modelRequests], ['runtimeSeconds', doc.metrics.runtimeSeconds]]) {
+    if (ps.every((p) => p[field] !== null) && Math.abs(ps.reduce((s, p) => s + p[field], 0) - total) > ps.length) {
+      errs.push(`phases[].${field} do not add up to the run total (${total})`);
+    }
+  }
   return errs;
 }
 
@@ -272,8 +295,11 @@ export function portableToRawRun(doc, role) {
       qualityTotal: doc.metrics.qualityTotal,
       modelRequests: doc.metrics.modelRequests,
       runtimeSeconds: doc.metrics.runtimeSeconds,
+      // Optional in the format: older files (and single-phase runs) may omit these.
+      failedCalls: typeof doc.metrics.failedCalls === 'number' ? doc.metrics.failedCalls : null,
     },
     efficiency: portableEfficiency(doc),
+    phases: Array.isArray(doc.phases) ? doc.phases : null,
     stages: doc.stages,
     recordedActivity: null,
     generatedWorkflows: doc.workflows.length ? doc.workflows : null,
@@ -286,7 +312,9 @@ export function portableToRawRun(doc, role) {
 
 /** Two runs are comparable only when they saw the same data under the same conditions. */
 export function conditionsKey(c) {
-  return JSON.stringify([c?.suite ?? null, c?.seed ?? null, c?.repeat ?? null, c?.phases ?? null, c?.dataSha256 ?? null]);
+  // `repeat` is which replicate a run is (the -rN of its id), not part of what it was tested on:
+  // two replicates of the same suite, seed, phases and data are comparable.
+  return JSON.stringify([c?.suite ?? null, c?.seed ?? null, c?.phases ?? null, c?.dataSha256 ?? null]);
 }
 
 export const sameConditions = (a, b) => conditionsKey(a) === conditionsKey(b);

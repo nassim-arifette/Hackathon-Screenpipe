@@ -17,13 +17,13 @@ export function Landing({ onEnter }: { onEnter: () => void }) {
         transition={{ duration: 0.7, ease: EASE }}
         className="relative z-10 flex flex-col items-center text-center"
       >
-        <span className="flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.3em] text-ink-400">
+        <span className="flex items-center gap-2 font-mono text-[14.5px] uppercase tracking-[0.3em] text-ink-400">
           <img src="/screenpipe-icon.png" alt="" className="h-4 w-4 rounded-[5px] opacity-90" />
           Screenpipe Workflows
         </span>
-        <h1 className="mt-5 text-[112px] font-semibold leading-[0.92] tracking-tightest text-ink-50">PipeOps</h1>
-        <p className="mt-4 text-[26px] font-medium text-signal">Prove It Before You Ship It.</p>
-        <p className="mt-6 max-w-[620px] text-[17px] leading-relaxed text-ink-300">
+        <h1 className="mt-5 text-[120px] font-semibold leading-[0.92] tracking-tightest text-ink-50">PipeOps</h1>
+        <p className="mt-4 text-[29px] font-medium text-signal">Prove It Before You Ship It.</p>
+        <p className="mt-6 max-w-[620px] text-[20px] leading-relaxed text-ink-300">
           The testing ground for AI-powered workflows.
         </p>
 
@@ -31,14 +31,14 @@ export function Landing({ onEnter }: { onEnter: () => void }) {
           onClick={onEnter}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.98 }}
-          className="group mt-12 inline-flex items-center gap-3 rounded-full bg-signal px-7 py-3.5 text-[16px] font-semibold text-on-signal transition hover:shadow-[0_0_40px_-6px_rgb(var(--signal)/0.75)]"
+          className="group mt-12 inline-flex items-center gap-3 rounded-full bg-signal px-7 py-3.5 text-[19px] font-semibold text-on-signal transition hover:shadow-[0_0_40px_-6px_rgb(var(--signal)/0.75)]"
         >
           Enter the Lab
           <span className="transition-transform group-hover:translate-x-1">→</span>
         </motion.button>
       </motion.div>
 
-      <span className="absolute bottom-8 font-mono text-[11px] tracking-widest text-ink-600">
+      <span className="absolute bottom-8 font-mono text-[13px] tracking-widest text-ink-500">
         Hackathon · Build Agents That Remember
       </span>
     </div>

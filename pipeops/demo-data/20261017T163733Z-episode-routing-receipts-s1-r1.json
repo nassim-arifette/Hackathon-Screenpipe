@@ -2,7 +2,7 @@
   "format": "pipeops.run",
   "formatVersion": 1,
   "kind": "full",
-  "exportedAt": "2026-10-17T22:41:08.546Z",
+  "exportedAt": "2026-10-18T10:02:46.653Z",
   "run": {
     "id": "20261017T163733Z-episode-routing-receipts-s1-r1",
     "label": "episode-routing",
@@ -87,6 +87,7 @@
     "qualityTotal": 11,
     "modelRequests": 111,
     "runtimeSeconds": 1175,
+    "failedCalls": null,
     "costUsd": null
   },
   "modelUsage": {
@@ -127,6 +128,22 @@
       }
     }
   },
+  "phases": [
+    {
+      "phase": 1,
+      "cycleStatus": "complete",
+      "frames": 586,
+      "checksPassed": 11,
+      "checksScored": 11,
+      "requests": 111,
+      "runtimeSeconds": 1175,
+      "inputTokens": 237035,
+      "cacheReadTokens": 5552674,
+      "cacheWriteTokens": 0,
+      "outputTokens": 98712,
+      "mistakes": {}
+    }
+  ],
   "stages": {
     "discover": {
       "modelRequests": 16,
@@ -166,7 +183,8 @@
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Finder @ 2026-10-16T11:28:54.698+00:00: \"Recents · Shared\"",
         "Preview @ 2026-10-16T11:27:44.506+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "no_duplicate-p1",
@@ -180,7 +198,8 @@
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Finder @ 2026-10-16T11:28:54.698+00:00: \"Recents · Shared\"",
         "Preview @ 2026-10-16T11:27:44.506+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "steps-p1",
@@ -196,7 +215,8 @@
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Finder @ 2026-10-16T11:28:54.698+00:00: \"Recents · Shared\"",
         "Preview @ 2026-10-16T11:27:44.506+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "missing_date-p1",
@@ -212,7 +232,8 @@
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Finder @ 2026-10-16T11:28:54.698+00:00: \"Recents · Shared\"",
         "Preview @ 2026-10-16T11:27:44.506+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "duplicate-p1",
@@ -227,7 +248,8 @@
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Finder @ 2026-10-16T11:28:54.698+00:00: \"Recents · Shared\"",
         "Preview @ 2026-10-16T11:27:44.506+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "high_value-p1",
@@ -243,7 +265,8 @@
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Finder @ 2026-10-16T11:28:54.698+00:00: \"Recents · Shared\"",
         "Preview @ 2026-10-16T11:27:44.506+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "type_lookup-p1",
@@ -260,7 +283,8 @@
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Finder @ 2026-10-16T11:28:54.698+00:00: \"Recents · Shared\"",
         "Preview @ 2026-10-16T11:27:44.506+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "noise_excluded-p1",
@@ -274,7 +298,8 @@
         "TextEdit @ 2026-10-16T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
         "Finder @ 2026-10-16T11:28:54.698+00:00: \"Recents · Shared\"",
         "Preview @ 2026-10-16T11:27:44.506+00:00: \"scan-0421.pdf · Page 1 of 1\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "email_separate-p1",
@@ -291,7 +316,8 @@
         "Mail @ 2026-10-16T12:22:37.505+00:00: \"Get Mail · Compose\"",
         "Mail @ 2026-10-15T10:41:35.028+00:00: \"Get Mail · Compose\"",
         "Mail @ 2026-10-16T12:23:17.025+00:00: \"Save As: · Atlas-timeline.pdf\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "one_off_unpublished-p1",
@@ -303,7 +329,8 @@
       "reason": null,
       "evidence": [
         "seeded on screen: \"Printers & Scanners\""
-      ]
+      ],
+      "inStages": null
     },
     {
       "id": "evidence_resolves-p1",
@@ -313,7 +340,8 @@
       "expected": "Every citation in every published workflow resolves to a real seeded frame.",
       "actual": "2 workflow(s) in the published catalog this phase.",
       "reason": null,
-      "evidence": null
+      "evidence": null,
+      "inStages": null
     }
   ],
   "workflows": [

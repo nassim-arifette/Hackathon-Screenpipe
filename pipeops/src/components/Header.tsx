@@ -44,9 +44,9 @@ export function Header({
     <header className="relative z-20 flex h-[72px] shrink-0 items-center justify-between border-b border-ink-800/80 pl-10 pr-[88px]">
       <div className="flex items-center gap-4">
         <Logo />
-        <span className="text-[17px] font-semibold tracking-tight text-ink-50">PipeOps</span>
-        <span className="text-ink-600">/</span>
-        <span className="flex items-center gap-1.5 text-[14px] text-ink-300">
+        <span className="text-[20px] font-semibold tracking-tight text-ink-50">PipeOps</span>
+        <span className="text-ink-500">/</span>
+        <span className="flex items-center gap-1.5 text-[16.5px] text-ink-300">
           <img src="/screenpipe-icon.png" alt="" className="h-8 w-8 rounded-[9px]" />
           {experiment.experiment.subject}
         </span>
@@ -61,7 +61,7 @@ export function Header({
                 <button
                   key={`${r.id}-${r.role}`}
                   onClick={() => onRun(r.id)}
-                  className={`relative z-10 rounded-full px-4 py-1.5 text-[13px] transition-colors ${
+                  className={`relative z-10 rounded-full px-4 py-1.5 text-[15.5px] transition-colors ${
                     active ? 'text-ink-950' : 'text-ink-300 hover:text-ink-100'
                   }`}
                 >
@@ -78,14 +78,14 @@ export function Header({
             })}
           </div>
         ) : (
-          <span className="font-mono text-[12px] tracking-wide text-ink-500">
+          <span className="font-mono text-[14.5px] tracking-wide text-ink-400">
             {step === 3 ? 'paired comparison · 2 runs' : 'no run loaded'}
           </span>
         )}
       </div>
 
       <div className="flex items-center gap-3">
-        <Badge kind={o.tone} label={o.label} />
+        <Badge size="lg" kind={o.tone} label={o.label} />
       </div>
     </header>
   );

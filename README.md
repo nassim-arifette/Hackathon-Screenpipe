@@ -4,7 +4,7 @@
 
 **Team PipeOps** · Hackathon · Build Agents That Remember · Track 01, *Find what to automate*
 
-**Live demo:** [pipeops-zeta.vercel.app](https://pipeops-zeta.vercel.app), hosted on Vercel and redeployed automatically from `main`. It is read-only and shows the bundled demo runs (`pipeops/demo-data/`); local runs, Stage Replay and live wfeval runs need the local setup ([`pipeops/README.md`](pipeops/README.md)).
+**Website:** [pipeops-zeta.vercel.app](https://pipeops-zeta.vercel.app).
 
 Screenpipe Workflows discovers repeatable tasks from recorded activity. When a developer changes one of
 its agents, how can they know the change helped?

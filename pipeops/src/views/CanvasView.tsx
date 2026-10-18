@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Experiment, Run, StageId, WorkflowRecord } from '../data/schema';
-import { ArrowRight, Badge, CountUp, Eyebrow, GhostButton, Missing, MissingBlock, PlayIcon, PrimaryButton } from '../components/ui';
+import { ArrowRight, CountUp, Eyebrow, GhostButton, Missing, MissingBlock, PlayIcon, PrimaryButton } from '../components/ui';
 import { fmtSeconds, pad2 } from '../lib/format';
 import { usePlayKey } from '../lib/events';
 
@@ -80,14 +80,8 @@ export function CanvasView({
       {/* ---------------- canvas ---------------- */}
       <div className="relative flex flex-1 flex-col px-10 pt-6">
         <div className="flex items-center justify-between">
-          <div>
-            <Eyebrow>Experiment canvas · run/{run.id}</Eyebrow>
-            <div className="mt-1.5 text-[22px] font-medium tracking-tight text-ink-100">
-              How recorded activity becomes evaluated workflows
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Badge kind="recorded" label="Recorded run" />
+          <div className="text-[25px] font-medium tracking-tight text-ink-100">
+            How recorded activity becomes evaluated workflows
           </div>
         </div>
 
@@ -150,7 +144,7 @@ export function CanvasView({
             className="absolute rounded-[28px] border border-ink-700/80 bg-ink-900/30"
             style={{ left: 20, top: 168, width: 1340, height: 252 }}
           >
-            <div className="absolute -top-3 left-8 bg-ink-950 px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+            <div className="absolute -top-3 left-8 bg-ink-950 px-3 font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">
               Agent pipeline · {stages.length} stages
             </div>
           </div>
@@ -164,13 +158,11 @@ export function CanvasView({
           >
             <div className="flex h-full items-center justify-between px-6">
               <div>
-                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">input</div>
-                <div className="mt-1 text-[20px] font-medium text-ink-50">Recorded activity</div>
+                <div className="font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">input</div>
+                <div className="mt-1 text-[23px] font-medium text-ink-50">Recorded activity</div>
               </div>
-              {run.recordedActivity ? (
-                <span className="text-[13px] text-ink-300">{run.recordedActivity.description}</span>
-              ) : (
-                <Missing size="sm" path="recordedActivity" />
+              {run.recordedActivity && (
+                <span className="text-[15.5px] text-ink-300">{run.recordedActivity.description}</span>
               )}
             </div>
           </Node>
@@ -189,14 +181,14 @@ export function CanvasView({
               >
                 <div className="flex h-full flex-col p-5">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-[12px] text-ink-400">{pad2(i + 1)}</span>
+                    <span className="font-mono text-[14.5px] text-ink-400">{pad2(i + 1)}</span>
                     <StageStatus phase={phase} p={p} />
                   </div>
-                  <div className="mt-2 text-[30px] font-semibold tracking-tight text-ink-50">{s.name}</div>
-                  <div className="mt-1 text-[13px] leading-snug text-ink-400">{s.summary}</div>
-                  <div className="mt-auto flex items-center gap-4 font-mono text-[11px] text-ink-500">
-                    <span>req {rec?.modelRequests ?? <DashVal />}</span>
-                    <span>time {rec?.runtimeSeconds != null ? `${rec.runtimeSeconds}s` : <DashVal />}</span>
+                  <div className="mt-2 text-[34px] font-semibold tracking-tight text-ink-50">{s.name}</div>
+                  <div className="mt-1 text-[15.5px] leading-snug text-ink-400">{s.summary}</div>
+                  <div className="mt-auto flex items-center gap-5 font-mono text-[14.5px] text-ink-400">
+                    <span>req <span className="text-ink-50">{rec?.modelRequests ?? <DashVal />}</span></span>
+                    <span>time <span className="text-ink-50">{rec?.runtimeSeconds != null ? `${rec.runtimeSeconds}s` : <DashVal />}</span></span>
                   </div>
                 </div>
               </Node>
@@ -213,14 +205,14 @@ export function CanvasView({
             transition={{ type: 'spring', stiffness: 300, damping: 24 }}
           >
             <button onClick={() => setSel({ kind: 'workflows' })} className="w-[190px] shrink-0 text-left">
-              <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">output</div>
+              <div className="font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">output</div>
               <div className="mt-1 flex items-baseline gap-2.5">
-                <span className="text-[20px] font-medium text-ink-50">Workflows</span>
+                <span className="text-[23px] font-medium text-ink-50">Workflows</span>
                 {run.generatedWorkflows && (
-                  <span className="tnum text-[28px] font-semibold text-ink-50">{run.generatedWorkflows.length}</span>
+                  <span className="tnum text-[32px] font-semibold text-ink-50">{run.generatedWorkflows.length}</span>
                 )}
               </div>
-              {run.generatedWorkflows && <div className="mt-1 font-mono text-[10px] text-ink-500">click one to inspect</div>}
+              {run.generatedWorkflows && <div className="mt-1 font-mono text-[12px] text-ink-400">click one to inspect</div>}
             </button>
             {run.generatedWorkflows ? (
               <div className="flex min-w-0 flex-1 items-stretch gap-3">
@@ -232,13 +224,13 @@ export function CanvasView({
                       sel.kind === 'workflow' && sel.id === w.id ? 'border-signal bg-signal/[0.06]' : 'border-ink-700 bg-ink-950/40'
                     }`}
                   >
-                    <div className="line-clamp-2 text-[13px] font-medium leading-snug text-ink-100">{w.title}</div>
+                    <div className="line-clamp-2 text-[15.5px] font-medium leading-snug text-ink-100">{w.title}</div>
                   </button>
                 ))}
                 {run.generatedWorkflows.length > 3 && (
                   <button
                     onClick={() => setSel({ kind: 'workflows' })}
-                    className="shrink-0 self-center rounded-full border border-ink-700 px-3 py-1 font-mono text-[11px] text-ink-300 hover:border-ink-400"
+                    className="shrink-0 self-center rounded-full border border-ink-700 px-3 py-1 font-mono text-[13px] text-ink-300 hover:border-ink-400"
                   >
                     +{run.generatedWorkflows.length - 3} more
                   </button>
@@ -258,15 +250,15 @@ export function CanvasView({
           >
             <div className="flex h-full items-center gap-6 px-6">
               <div className="relative flex h-[96px] w-[96px] items-center justify-center rounded-full border border-dashed border-ink-600">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-ink-500">sealed</span>
+                <span className="font-mono text-[12px] uppercase tracking-widest text-ink-400">sealed</span>
               </div>
               <div className="flex-1">
-                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">evaluation vs ground truth</div>
-                <div className="mt-1 text-[20px] text-ink-300">
-                  {done ? 'Ready — see Inspect Evaluation' : 'awaiting run…'}
+                <div className="font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">evaluation vs ground truth</div>
+                <div className="mt-1 text-[23px] text-ink-300">
+                  {done ? 'Ready · see step 03' : 'awaiting run…'}
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-1 font-mono text-[13px]">
+              <div className="flex flex-col items-end gap-1 font-mono text-[15.5px]">
                 <span className="text-ink-400">
                   requests{' '}
                   <span className="text-ink-100">{done ? <CountUp value={run.metrics.modelRequests} /> : '··'}</span>
@@ -284,7 +276,7 @@ export function CanvasView({
 
         {/* playback controls */}
         <div className="absolute bottom-5 left-10 flex items-center gap-5">
-          <PrimaryButton onClick={play}>
+          <PrimaryButton size="lg" onClick={play}>
             <PlayIcon /> {playing ? 'Replaying…' : 'Replay recording'}
           </PrimaryButton>
           <div className="flex items-center gap-1.5">
@@ -301,9 +293,6 @@ export function CanvasView({
               />
             ))}
           </div>
-          <span className="font-mono text-[11px] text-ink-500">
-            playback shows stage order only
-          </span>
         </div>
       </div>
 
@@ -335,18 +324,18 @@ export function CanvasView({
 }
 
 function DashVal() {
-  return <span className="text-ink-600">—</span>;
+  return <span className="text-ink-500">—</span>;
 }
 
 function StageStatus({ phase, p }: { phase: number; p: number }) {
   if (phase === p)
     return (
-      <span className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-signal">
+      <span className="flex items-center gap-1.5 font-mono text-[13px] uppercase tracking-widest text-signal">
         <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-signal" /> playing
       </span>
     );
-  if (phase > p) return <span className="font-mono text-[11px] uppercase tracking-widest text-ink-300">✓ recorded</span>;
-  return <span className="font-mono text-[11px] uppercase tracking-widest text-ink-600">queued</span>;
+  if (phase > p) return <span className="font-mono text-[15px] text-signal">✓</span>;
+  return <span className="font-mono text-[13px] uppercase tracking-widest text-ink-500">queued</span>;
 }
 
 function Node({
@@ -401,7 +390,7 @@ function Inspector({
   onSelectWorkflow: (id: string) => void;
 }) {
   const back = (
-    <button onClick={onBack} className="mb-6 font-mono text-[11px] uppercase tracking-widest text-ink-500 hover:text-ink-200">
+    <button onClick={onBack} className="mb-6 font-mono text-[13px] uppercase tracking-widest text-ink-400 hover:text-ink-200">
       ← run overview
     </button>
   );
@@ -409,38 +398,41 @@ function Inspector({
   if (sel.kind === 'run') {
     return (
       <div className="flex h-full flex-col">
-        <Eyebrow>Inspector · run</Eyebrow>
-        <div className="mt-3 flex items-center gap-3">
-          <span className="text-[40px] font-semibold tracking-tight text-ink-50">{run.label}</span>
-          <Badge kind="recorded" />
+        <Eyebrow size="lg">Inspector · run</Eyebrow>
+        <div className="mt-3 truncate whitespace-nowrap text-[34px] font-semibold tracking-tight text-ink-50" title={run.label}>
+          {run.label}
         </div>
-        <div className="mt-8 divide-y divide-ink-800 border-y border-ink-800">
-          <BigStat label="model requests" value={<CountUp value={run.metrics.modelRequests} />} />
-          <BigStat
-            label="runtime"
-            value={<CountUp value={run.metrics.runtimeSeconds} format={(n) => `${Math.round(n)}s`} />}
-            sub={fmtSeconds(run.metrics.runtimeSeconds)}
-          />
-        </div>
-        <div className="mt-8">
-          <Eyebrow>Per-stage breakdown</Eyebrow>
-          <div className="mt-3 space-y-2">
+        {/* The three blocks share the remaining height with equal gaps between them. */}
+        <div className="mt-6 flex flex-1 flex-col justify-evenly">
+          <div className="border-t border-ink-800">
+            <BigStat label="model requests" value={<CountUp value={run.metrics.modelRequests} />} />
+          </div>
+          <div className="border-t border-ink-800">
+            <BigStat
+              label="runtime"
+              value={<CountUp value={run.metrics.runtimeSeconds} format={(n) => `${Math.round(n)}s`} />}
+              sub={fmtSeconds(run.metrics.runtimeSeconds)}
+            />
+          </div>
+          <div className="border-t border-ink-800 pt-5">
+          <Eyebrow size="xl">Per-stage breakdown</Eyebrow>
+          <div className="mt-4 space-y-3.5">
             {experiment.stages.map((s) => (
-              <div key={s.id} className="flex items-center justify-between text-[14px]">
-                <span className="text-ink-200">{s.name}</span>
+              <div key={s.id} className="flex items-baseline justify-between text-[22px]">
+                <span className="text-ink-100">{s.name}</span>
                 {run.stages[s.id]?.modelRequests != null ? (
-                  <span className="tnum font-mono text-ink-100">{run.stages[s.id].modelRequests} req</span>
+                  <span className="tnum font-mono">
+                    <span className="text-[26px] font-semibold text-signal">{run.stages[s.id].modelRequests}</span>{' '}
+                    <span className="text-[17px] text-ink-400">req</span>
+                  </span>
                 ) : (
                   <Missing size="sm" path={`stages.${s.id}.modelRequests`} />
                 )}
               </div>
             ))}
           </div>
+          </div>
         </div>
-        <p className="mt-auto text-[13px] leading-relaxed text-ink-500">
-          Click any node on the canvas to inspect it. Stage descriptions are draft copy until confirmed against the
-          engine.
-        </p>
       </div>
     );
   }
@@ -453,34 +445,31 @@ function Inspector({
     return (
       <div className="flex h-full flex-col">
         {back}
-        <Eyebrow>
+        <Eyebrow size="lg">
           Stage {pad2(i + 1)} / {pad2(experiment.stages.length)}
         </Eyebrow>
-        <div className="mt-2 text-[56px] font-semibold leading-none tracking-tightest text-ink-50">{s.name}</div>
-        <div className="mt-4 flex items-start gap-3">
-          <p className="text-[16px] leading-relaxed text-ink-300">{s.summary}</p>
-          {s.summaryStatus === 'draft' && <Badge kind="placeholder" label="draft copy" />}
-        </div>
+        <div className="mt-2 text-[60px] font-semibold leading-none tracking-tightest text-ink-50">{s.name}</div>
+        <p className="mt-4 text-[19px] leading-relaxed text-ink-300">{s.summary}</p>
         <div className="mt-8 space-y-4">
           <Field label="Model requests" value={rec?.modelRequests} path={`${base}.modelRequests`} />
           <Field label="Runtime" value={rec?.runtimeSeconds != null ? `${rec.runtimeSeconds}s` : null} path={`${base}.runtimeSeconds`} />
           {/* Snapshots exist only for stage replays, so the row is simply omitted when absent. */}
           {rec?.snapshotId != null && <Field label="Saved snapshot" value={rec.snapshotId} path={`${base}.snapshotId`} />}
           <div className="flex min-h-0 flex-col gap-1.5">
-            <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">Agent's own summary</span>
+            <span className="font-mono text-[13px] uppercase tracking-widest text-ink-400">Agent's own summary</span>
             {rec?.output != null ? (
-              <p className="max-h-[200px] overflow-y-auto whitespace-pre-wrap pr-1 text-[13px] leading-relaxed text-ink-200">{rec.output}</p>
+              <p className="max-h-[200px] overflow-y-auto whitespace-pre-wrap pr-1 text-[15.5px] leading-relaxed text-ink-200">{rec.output}</p>
             ) : (
               <Missing path={`${base}.output`} />
             )}
           </div>
         </div>
         <div className="mt-auto rounded-2xl border border-signal/30 bg-signal/[0.04] p-5">
-          <div className="text-[15px] font-medium text-ink-50">Debug this stage in isolation</div>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-ink-400">
+          <div className="text-[17.5px] font-medium text-ink-50">Debug this stage in isolation</div>
+          <p className="mt-1.5 text-[15.5px] leading-relaxed text-ink-400">
             Branch a replay from the snapshot saved before {s.name}. Upstream stages are reused, not re-run.
           </p>
-          <PrimaryButton className="mt-4" onClick={() => onReplayStage(s.id)}>
+          <PrimaryButton size="lg" className="mt-4" onClick={() => onReplayStage(s.id)}>
             Replay from {s.name} <ArrowRight />
           </PrimaryButton>
         </div>
@@ -492,17 +481,13 @@ function Inspector({
     return (
       <div className="flex h-full flex-col">
         {back}
-        <Eyebrow>Input</Eyebrow>
-        <div className="mt-2 text-[44px] font-semibold leading-none tracking-tight text-ink-50">Recorded activity</div>
-        <p className="mt-4 text-[15px] leading-relaxed text-ink-300">
+        <Eyebrow size="lg">Input</Eyebrow>
+        <div className="mt-2 text-[48px] font-semibold leading-none tracking-tight text-ink-50">Recorded activity</div>
+        <p className="mt-4 text-[17.5px] leading-relaxed text-ink-300">
           The captured user session the agent reads to discover workflows.
         </p>
         <div className="mt-8">
-          {run.recordedActivity ? (
-            <p className="text-ink-200">{run.recordedActivity.description}</p>
-          ) : (
-            <MissingBlock title="Session description, sources and duration" path={`runs[${run.id}].recordedActivity`} />
-          )}
+          {run.recordedActivity && <p className="text-ink-200">{run.recordedActivity.description}</p>}
         </div>
       </div>
     );
@@ -512,9 +497,9 @@ function Inspector({
     return (
       <div className="flex h-full flex-col">
         {back}
-        <Eyebrow>Output</Eyebrow>
-        <div className="mt-2 text-[44px] font-semibold leading-none tracking-tight text-ink-50">Generated workflows</div>
-        <p className="mt-4 text-[15px] leading-relaxed text-ink-300">Reusable workflows the agent produced for this run.</p>
+        <Eyebrow size="lg">Output</Eyebrow>
+        <div className="mt-2 text-[48px] font-semibold leading-none tracking-tight text-ink-50">Generated workflows</div>
+        <p className="mt-4 text-[17.5px] leading-relaxed text-ink-300">Reusable workflows the agent produced for this run.</p>
         <div className="mt-8 space-y-3 overflow-y-auto">
           {run.generatedWorkflows ? (
             run.generatedWorkflows.map((w) => (
@@ -523,35 +508,35 @@ function Inspector({
                 onClick={() => onSelectWorkflow(w.id)}
                 className="block w-full rounded-xl border border-ink-700 p-4 text-left transition-colors hover:border-signal/70"
               >
-                <div className="text-[15px] font-medium text-ink-100">{w.title}</div>
+                <div className="text-[17.5px] font-medium text-ink-100">{w.title}</div>
                 {w.confidence != null && (
-                  <div className="mt-1 font-mono text-[11px] text-ink-500">confidence {w.confidence}/4</div>
+                  <div className="mt-1 font-mono text-[13px] text-ink-400">confidence {w.confidence}/4</div>
                 )}
                 {w.trigger && (
-                  <p className="mt-3 line-clamp-2 text-[13px] leading-relaxed text-ink-300">
-                    <span className="text-ink-500">trigger · </span>
+                  <p className="mt-3 line-clamp-2 text-[15.5px] leading-relaxed text-ink-300">
+                    <span className="text-ink-400">trigger · </span>
                     {w.trigger}
                   </p>
                 )}
                 {w.outcome && (
-                  <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-ink-300">
-                    <span className="text-ink-500">outcome · </span>
+                  <p className="mt-2 line-clamp-2 text-[15.5px] leading-relaxed text-ink-300">
+                    <span className="text-ink-400">outcome · </span>
                     {w.outcome}
                   </p>
                 )}
                 {w.variations && (
-                  <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-ink-400">
-                    <span className="text-ink-500">variations · </span>
+                  <p className="mt-2 line-clamp-2 text-[14.5px] leading-relaxed text-ink-400">
+                    <span className="text-ink-400">variations · </span>
                     {w.variations.join(' · ')}
                   </p>
                 )}
                 {w.limitations && (
-                  <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-ink-400">
-                    <span className="text-ink-500">limitations · </span>
+                  <p className="mt-2 line-clamp-2 text-[14.5px] leading-relaxed text-ink-400">
+                    <span className="text-ink-400">limitations · </span>
                     {w.limitations.join(' · ')}
                   </p>
                 )}
-                <div className="mt-3 font-mono text-[11px] text-ink-500">view full workflow →</div>
+                <div className="mt-3 font-mono text-[13px] text-ink-400">view full workflow →</div>
               </button>
             ))
           ) : (
@@ -564,7 +549,7 @@ function Inspector({
             </MissingBlock>
           )}
         </div>
-        <GhostButton className="mt-auto self-start" onClick={onOpenEvidence}>
+        <GhostButton size="lg" className="mt-auto self-start" onClick={onOpenEvidence}>
           Match against ground truth <ArrowRight />
         </GhostButton>
       </div>
@@ -582,15 +567,15 @@ function Inspector({
   return (
     <div className="flex h-full flex-col">
       {back}
-      <Eyebrow>Evaluation</Eyebrow>
+      <Eyebrow size="lg">Evaluation</Eyebrow>
       <div className="mt-6 flex h-[150px] w-[150px] items-center justify-center rounded-full border border-dashed border-ink-600">
-        <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">sealed</span>
+        <span className="font-mono text-[13px] uppercase tracking-widest text-ink-400">sealed</span>
       </div>
-      <p className="mt-8 text-[15px] leading-relaxed text-ink-300">
+      <p className="mt-8 text-[17.5px] leading-relaxed text-ink-300">
         Each check compares the generated workflows with known ground truth — the result is revealed in Step 03, not
         here.
       </p>
-      <PrimaryButton className="mt-6 self-start" onClick={onOpenEvidence}>
+      <PrimaryButton size="lg" className="mt-6 self-start" onClick={onOpenEvidence}>
         Open evidence explorer <ArrowRight />
       </PrimaryButton>
     </div>
@@ -600,10 +585,10 @@ function Inspector({
 function BigStat({ label, value, sub }: { label: string; value: ReactNode; sub?: string }) {
   return (
     <div className="flex items-end justify-between py-5">
-      <span className="font-mono text-[11px] uppercase tracking-widest text-ink-400">{label}</span>
+      <span className="font-mono text-[13px] uppercase tracking-widest text-ink-400">{label}</span>
       <span className="text-right">
-        <span className="tnum block text-[52px] font-semibold leading-none tracking-tightest text-ink-50">{value}</span>
-        {sub && <span className="mt-1 block font-mono text-[12px] text-ink-500">{sub}</span>}
+        <span className="tnum block text-[56px] font-semibold leading-none tracking-tightest text-signal">{value}</span>
+        {sub && <span className="mt-1 block font-mono text-[14.5px] text-ink-400">{sub}</span>}
       </span>
     </div>
   );
@@ -612,8 +597,8 @@ function BigStat({ label, value, sub }: { label: string; value: ReactNode; sub?:
 function Field({ label, value, path }: { label: string; value: string | number | null | undefined; path: string }) {
   return (
     <div className="flex flex-col gap-1.5 border-b border-ink-800 pb-4">
-      <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">{label}</span>
-      {value != null ? <span className="text-[18px] text-ink-50">{value}</span> : <Missing path={path} />}
+      <span className="font-mono text-[13px] uppercase tracking-widest text-ink-400">{label}</span>
+      {value != null ? <span className="text-[21px] text-ink-50">{value}</span> : <Missing path={path} />}
     </div>
   );
 }
@@ -637,8 +622,8 @@ function WorkflowDetail({
     items?.length ? (
       <ul className="mt-2 space-y-2">
         {items.map((t, i) => (
-          <li key={i} className="flex gap-3 text-[13px] leading-relaxed text-ink-200">
-            <span className="mt-0.5 shrink-0 font-mono text-[11px] text-ink-500">{numbered ? pad2(i + 1) : '·'}</span>
+          <li key={i} className="flex gap-3 text-[15.5px] leading-relaxed text-ink-200">
+            <span className="mt-0.5 shrink-0 font-mono text-[13px] text-ink-400">{numbered ? pad2(i + 1) : '·'}</span>
             {t}
           </li>
         ))}
@@ -650,14 +635,14 @@ function WorkflowDetail({
     );
   return (
     <div className="flex h-full flex-col">
-      <button onClick={onBack} className="mb-6 self-start font-mono text-[11px] uppercase tracking-widest text-ink-500 hover:text-ink-200">
+      <button onClick={onBack} className="mb-6 self-start font-mono text-[13px] uppercase tracking-widest text-ink-400 hover:text-ink-200">
         ← all workflows
       </button>
-      <Eyebrow>Generated workflow</Eyebrow>
-      <div className="mt-2 text-[24px] font-semibold leading-snug tracking-tight text-ink-50">{w.title}</div>
+      <Eyebrow size="lg">Generated workflow</Eyebrow>
+      <div className="mt-2 text-[27px] font-semibold leading-snug tracking-tight text-ink-50">{w.title}</div>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         {w.confidence != null ? (
-          <span className="flex items-center gap-2 font-mono text-[11px] text-ink-400">
+          <span className="flex items-center gap-2 font-mono text-[13px] text-ink-400">
             confidence
             <span className="flex gap-1">
               {[1, 2, 3, 4].map((n) => (
@@ -670,24 +655,24 @@ function WorkflowDetail({
           <Missing size="sm" path={`${base}.confidence`} />
         )}
         {matched && (
-          <span className="rounded-full border border-ink-600 px-2.5 py-0.5 font-mono text-[10.5px] text-ink-300" title="Pairing made by the grader in Step 03, not by an agent">
+          <span className="rounded-full border border-ink-600 px-2.5 py-0.5 font-mono text-[12.5px] text-ink-300" title="Pairing made by the grader in Step 03, not by an agent">
             graded as: {matched.title}
           </span>
         )}
       </div>
 
       <div className="mt-5 min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
-        <Section label="Trigger">{w.trigger ? <p className="mt-2 text-[13px] leading-relaxed text-ink-200">{w.trigger}</p> : <div className="mt-2"><Missing size="sm" path={`${base}.trigger`} /></div>}</Section>
-        <Section label="Outcome">{w.outcome ? <p className="mt-2 text-[13px] leading-relaxed text-ink-200">{w.outcome}</p> : <div className="mt-2"><Missing size="sm" path={`${base}.outcome`} /></div>}</Section>
+        <Section label="Trigger">{w.trigger ? <p className="mt-2 text-[15.5px] leading-relaxed text-ink-200">{w.trigger}</p> : <div className="mt-2"><Missing size="sm" path={`${base}.trigger`} /></div>}</Section>
+        <Section label="Outcome">{w.outcome ? <p className="mt-2 text-[15.5px] leading-relaxed text-ink-200">{w.outcome}</p> : <div className="mt-2"><Missing size="sm" path={`${base}.outcome`} /></div>}</Section>
         <Section label={`Steps${w.steps ? ` · ${w.steps.length}` : ''}`}>{list(w.steps, `${base}.steps`, true)}</Section>
         <Section label="Variations">{list(w.variations, `${base}.variations`)}</Section>
         <Section label="Limitations">{list(w.limitations, `${base}.limitations`)}</Section>
       </div>
 
-      <p className="mt-4 text-[12px] leading-relaxed text-ink-500">
+      <p className="mt-4 text-[14.5px] leading-relaxed text-ink-400">
         The run's artifacts record the pipeline's final catalog, not which agent wrote each field, so none is attributed to one.
       </p>
-      <GhostButton className="mt-3 self-start" onClick={onOpenEvidence}>
+      <GhostButton size="lg" className="mt-3 self-start" onClick={onOpenEvidence}>
         Match against ground truth <ArrowRight />
       </GhostButton>
     </div>
@@ -697,7 +682,7 @@ function WorkflowDetail({
 function Section({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="border-t border-ink-800 pt-4">
-      <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">{label}</span>
+      <span className="font-mono text-[13px] uppercase tracking-widest text-ink-400">{label}</span>
       {children}
     </div>
   );

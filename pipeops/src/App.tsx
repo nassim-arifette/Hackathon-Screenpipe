@@ -125,7 +125,7 @@ export default function App() {
   if (!data) {
     return (
       <Stage scale={scale}>
-        <LoadView onLoad={handleLoad} standalone />
+        <LoadView onLoad={handleLoad} />
       </Stage>
     );
   }

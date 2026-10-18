@@ -31,11 +31,11 @@ const BADGE: Record<Provenance, { label: string; cls: string; dot: ReactNode }> 
   },
 };
 
-export function Badge({ kind, label }: { kind: Provenance; label?: string }) {
+export function Badge({ kind, label, size = 'md' }: { kind: Provenance; label?: string; size?: 'md' | 'lg' }) {
   const b = BADGE[kind];
   return (
     <span
-      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.12em] ${b.cls}`}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2 py-0.5 font-mono ${size === 'lg' ? 'text-[12.5px]' : 'text-[10.5px]'} uppercase tracking-[0.12em] ${b.cls}`}
     >
       {b.dot}
       {label ?? b.label}
@@ -48,7 +48,7 @@ export function Missing({ path, size = 'md' }: { path: string; size?: 'sm' | 'md
   return (
     <span
       className={`inline-flex items-center gap-2 rounded-md border border-dashed border-ink-500/80 ${
-        size === 'sm' ? 'px-1.5 py-0.5 text-[11px]' : 'px-2 py-1 text-xs'
+        size === 'sm' ? 'px-1.5 py-0.5 text-[13px]' : 'px-2 py-1 text-[14px]'
       } font-mono text-ink-400`}
       title={`Will be read from ${path}`}
     >
@@ -63,24 +63,27 @@ export function MissingBlock({ title, path, children }: { title: string; path: s
   return (
     <div className="hatch-muted rounded-xl border border-dashed border-ink-600 p-4">
       <div className="flex items-center justify-between gap-3">
-        <span className="text-[13px] text-ink-200">{title}</span>
+        <span className="text-[15.5px] text-ink-200">{title}</span>
         <Badge kind="placeholder" />
       </div>
-      <div className="mt-2 font-mono text-[11px] text-ink-400">source → {path}</div>
+      <div className="mt-2 font-mono text-[13px] text-ink-400">source → {path}</div>
       {children}
     </div>
   );
 }
 
-export function Eyebrow({ children, className = '' }: { children: ReactNode; className?: string }) {
+/** `size="lg"` is the larger type scale (used on the Load page); the default is unchanged. */
+export type UiSize = 'md' | 'lg' | 'xl';
+
+export function Eyebrow({ children, className = '', size = 'md' }: { children: ReactNode; className?: string; size?: UiSize }) {
   return (
-    <div className={`font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 ${className}`}>{children}</div>
+    <div className={`font-mono ${size === 'xl' ? 'text-[16px]' : size === 'lg' ? 'text-[14px]' : 'text-[11px]'} uppercase tracking-[0.18em] text-ink-400 ${className}`}>{children}</div>
   );
 }
 
 export function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded border border-ink-600 bg-ink-850 px-1 font-mono text-[10px] text-ink-300">
+    <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded border border-ink-600 bg-ink-850 px-1.5 font-mono text-[12px] text-ink-300">
       {children}
     </kbd>
   );
@@ -112,17 +115,19 @@ export function PrimaryButton({
   onClick,
   disabled,
   className = '',
+  size = 'md',
 }: {
   children: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
+  size?: UiSize;
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`group inline-flex items-center gap-2 rounded-full bg-signal px-4 py-2 text-[13px] font-semibold text-on-signal transition hover:shadow-[0_0_28px_-4px_rgb(var(--signal)/0.7)] disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
+      className={`group inline-flex items-center gap-2 rounded-full bg-signal ${size === 'xl' ? 'px-6 py-3 text-[18px]' : size === 'lg' ? 'px-5 py-2.5 text-[16px]' : 'px-4 py-2 text-[13px]'} font-semibold text-on-signal transition hover:shadow-[0_0_28px_-4px_rgb(var(--signal)/0.7)] disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
     >
       {children}
     </button>
@@ -134,16 +139,18 @@ export function GhostButton({
   onClick,
   active,
   className = '',
+  size = 'md',
 }: {
   children: ReactNode;
   onClick?: () => void;
   active?: boolean;
   className?: string;
+  size?: UiSize;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[13px] transition ${
+      className={`inline-flex items-center gap-2 rounded-full border ${size === 'xl' ? 'px-5 py-2.5 text-[18px]' : size === 'lg' ? 'px-4 py-2 text-[16px]' : 'px-3.5 py-1.5 text-[13px]'} transition ${
         active
           ? 'border-signal/60 bg-signal/10 text-signal'
           : 'border-ink-600 text-ink-200 hover:border-ink-400 hover:text-ink-50'
@@ -179,6 +186,7 @@ export function Select<T extends string>({
   placeholder = 'select…',
   className = '',
   direction = 'down',
+  size = 'md',
 }: {
   value: T | '';
   onChange: (v: T) => void;
@@ -188,8 +196,10 @@ export function Select<T extends string>({
   className?: string;
   /** 'up' for selects near the bottom edge, where a downward list would be clipped. */
   direction?: 'down' | 'up';
+  size?: UiSize;
 }) {
   const [open, setOpen] = useState(false);
+  const text = size === 'xl' ? 'text-[19px]' : size === 'lg' ? 'text-[16px]' : 'text-[13px]';
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -216,11 +226,11 @@ export function Select<T extends string>({
         type="button"
         onClick={() => !disabled && setOpen((o) => !o)}
         disabled={disabled}
-        className={`flex w-full items-center justify-between gap-2 rounded-lg border bg-ink-900 px-3 py-2 font-mono text-[13px] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+        className={`flex w-full items-center justify-between gap-2 rounded-lg border bg-ink-900 px-3.5 ${size === 'xl' ? 'py-3' : size === 'lg' ? 'py-2.5' : 'py-2'} font-mono ${text} transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
           open ? 'border-signal/50' : 'border-ink-700 hover:border-ink-500'
         }`}
       >
-        <span className={`truncate ${current ? 'text-ink-100' : 'text-ink-500'}`}>{current?.label ?? placeholder}</span>
+        <span className={`truncate ${current ? 'text-ink-100' : 'text-ink-400'}`}>{current?.label ?? placeholder}</span>
         <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={`shrink-0 text-ink-400 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}>
           <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -242,7 +252,7 @@ export function Select<T extends string>({
                     onChange(o.value);
                     setOpen(false);
                   }}
-                  className={`flex w-full items-center whitespace-nowrap rounded-md px-2.5 py-1.5 text-left font-mono text-[13px] transition-colors ${
+                  className={`flex w-full items-center whitespace-nowrap rounded-md px-2.5 py-1.5 text-left font-mono ${text} transition-colors ${
                     o.value === value ? 'bg-signal/10 text-signal' : 'text-ink-200 hover:bg-ink-850'
                   }`}
                 >

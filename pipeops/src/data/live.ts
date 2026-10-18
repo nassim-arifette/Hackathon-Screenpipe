@@ -95,8 +95,78 @@ export async function fetchStatus(): Promise<{ running: boolean; runId: string |
   return json(await fetch('/api/wfeval/status'));
 }
 
+/** One recorded `wfeval stage` run. Every number is null when the run did not record it. */
+export interface StageRun {
+  id: string;
+  variant: string | null;
+  suite: string | null;
+  seed: number | null;
+  /** 'workflow-review', or 'workflow-deepen+workflow-review' for Deepen then Review. */
+  stage: string;
+  snapshot: string | null;
+  step: string | null;
+  requests: number | null;
+  seconds: number | null;
+  checksPassed: number | null;
+  checksScored: number | null;
+  inputTokens: number | null;
+  cacheReadTokens: number | null;
+  cacheWriteTokens: number | null;
+  outputTokens: number | null;
+  failedCalls: number | null;
+  tokenSource: string | null;
+  /** false when the harness failed the run (no request logged): excluded from the table, counted. */
+  usable: boolean;
+}
+
+export async function fetchStageRuns(): Promise<StageRun[]> {
+  return json(await fetch('/api/stage-runs'));
+}
+
+/** Checks of each stage run graded again against the suite's current truth; null where it could not be. */
+export type StageRegrades = Record<string, { passed: number; scored: number; truth: string } | null>;
+
+export async function fetchStageRegrades(): Promise<StageRegrades> {
+  return json(await fetch('/api/stage-runs/regraded'));
+}
+
 export async function fetchSnapshots(): Promise<SnapshotSummary[]> {
   return json(await fetch('/api/snapshots'));
+}
+
+/** One `wfeval stage` run (server/convert.mjs stageRunSummary). Every field is null when the
+ *  run did not record it. Never a full-evaluation score. */
+export interface StageRunSummary {
+  id: string;
+  variant: string | null;
+  /** The agents it ran, in order: one, or several with --through. */
+  tasks: string[];
+  snapshot: string | null;
+  phase: number | null;
+  /** What was graded: the drafts (Discover, Deepen, Maintain) or the published catalog (Review). */
+  view: 'drafts' | 'catalog' | null;
+  status: string | null;
+  passed: number | null;
+  scored: number | null;
+  /** Score of the same view in the snapshot, before the agent ran (0..1). */
+  scoreBefore: number | null;
+  requests: number | null;
+  seconds: number | null;
+  output: number | null;
+  /** Workflows calls the engine refused (usage.workspace.failed). */
+  failedCalls: number | null;
+  /** Requests per agent, for a --through chain. */
+  byTask: Record<string, number | null> | null;
+  /** Text Review published that the catalog saved shorter (catalog view only). */
+  clipped: { fields: number; chars: number | null } | null;
+  inStages: number | null;
+  keywordChecks: number | null;
+  truth: string | null;
+  startedAt: string | null;
+}
+
+export async function fetchStageResults(): Promise<StageRunSummary[]> {
+  return json(await fetch('/api/stage-results'));
 }
 
 /** Starts a live wfeval run and streams its stdout/stderr text as it arrives. Resolves when the stream ends. */
@@ -124,7 +194,7 @@ export async function streamWfevalRun(
 
 /** Replays one agent from a saved snapshot step. Same streaming contract as streamWfevalRun. */
 export async function streamWfevalStage(
-  params: { step: string; task?: string; variant: string; repeat?: number },
+  params: { step: string; task?: string; variant: string; repeat?: number; through?: string },
   onChunk: (text: string) => void,
 ): Promise<void> {
   const res = await fetch('/api/wfeval/stage', {

@@ -1,0 +1,464 @@
+{
+  "format": "pipeops.run",
+  "formatVersion": 1,
+  "kind": "full",
+  "exportedAt": "2026-10-18T10:02:47.109Z",
+  "run": {
+    "id": "20261018T090036Z-preflight-conflict-receipts-s1-r1",
+    "label": "preflight-conflict",
+    "startedAt": "2026-10-18T09:00:37.417572+00:00",
+    "finishedAt": "2026-10-18T09:39:21.989546+00:00"
+  },
+  "conditions": {
+    "suite": "receipts",
+    "seed": 1,
+    "repeat": 1,
+    "phases": [
+      1,
+      2,
+      3
+    ],
+    "framesByPhase": {
+      "1": 586,
+      "2": 126,
+      "3": 0
+    },
+    "dataSha256": {
+      "phase1.json": "f2343f495408afdae3a4f4fa14fbd796697a9dcaff748002a3631972f4c95b1d",
+      "phase2.json": "5980fc69ca88ba3f4f5aa8b895ac2f2338c03121440a758d1e2dd64caa445e2d",
+      "phase3.json": "adc478e0bc5c3ab1e1f7b2e502e6e8588552ffe3dd20ab5b0077de9930084346",
+      "truth.json": "1a12ed188b5dec660705b446eda09c666e52266ecc1b3b4cd0dcb5bca89e6054"
+    }
+  },
+  "provenance": {
+    "variant": {
+      "name": "preflight-conflict",
+      "description": "review-preflight plus conflict-revision (409 write errors carry the current revision)",
+      "file": "variants/preflight-conflict.json",
+      "sha256": "06cdd108d1cdb0fb2348789a44878ae648b66588890fbf84037e1cc913d2fb11",
+      "pipeOverridesSha256": {}
+    },
+    "model": {
+      "provider": "screenpipe-cloud",
+      "name": "claude-sonnet-5"
+    },
+    "engine": {
+      "commit": "a8aaee2d6348aa1a0578981098fe97c2ec46d32a",
+      "patchSha256": null
+    },
+    "harness": {
+      "piVersion": "0.84.1",
+      "bunVersion": "1.3.10"
+    },
+    "promptSha256": {
+      "workflow-deepen.input": "1b29502555a23d9f91d44adf69c950ea125582444d4316b49e78bb525d7ba077",
+      "workflow-deepen.instructions": "a40798ce5bf757891cf4ae8d5edf9da71dd4dc0872e1021e49fee20818709722",
+      "workflow-deepen.tools": "47d2724bfe285b9150ad10e5db98295bfe5e468206a297d198a118aa7e7ae6f6",
+      "workflow-discover.input": "38b4850925f1b765ae755fd3acc241b77531bff21f6974ba8285df857c63964f",
+      "workflow-discover.instructions": "c7cc55b904f14cf005ec0d438ae0a4d7b2255933d9265e5f90c49707eadb93b7",
+      "workflow-discover.tools": "d23ab59490fcf5ee06e1e2cf746304ce6f32cf4fdff1667ceb2d448858dce24d",
+      "workflow-maintain.input": "57cb3c161b5c2c7e2be2b80b9b765e428f12e7c81640726463e8f789f1d08797",
+      "workflow-maintain.instructions": "b75597a3fdcf763f6f250fdaf4be018f9aa1de78deaaf2467ce3d11238bd5a06",
+      "workflow-maintain.tools": "d963a23b2e36f1c913cbddf89901062635b28fbab8de741196225d855fc6a109",
+      "workflow-review.input": "1332612644e03dc5b4d92c442c66e6a65d5c56507c77919a27cd705555e3d6b6",
+      "workflow-review.instructions": "0cf168643e2b96ff5d44a2c0d74482c0722e63c26d8dc85476c4a662b2436ddc",
+      "workflow-review.tools": "ca4d8491caab515963c6bc2ac0033dc19540a4bf300c2ded70fbc273abee3d22"
+    },
+    "contaminationClean": true,
+    "sanitization": {
+      "redactedHomePaths": 0
+    }
+  },
+  "groundTruth": [
+    {
+      "id": "email",
+      "title": "Save an emailed attachment into the project folder and reply",
+      "expect": "published"
+    },
+    {
+      "id": "printer",
+      "title": "One-off printer driver setup",
+      "expect": "unpublished"
+    },
+    {
+      "id": "receipts",
+      "title": "Rename scanned receipts DATE_NAME_TYPE.pdf and log them in tracker.csv",
+      "expect": "published"
+    }
+  ],
+  "metrics": {
+    "qualityPassed": 12,
+    "qualityTotal": 14,
+    "modelRequests": 189,
+    "runtimeSeconds": 1356,
+    "failedCalls": 32,
+    "costUsd": null
+  },
+  "modelUsage": {
+    "total": {
+      "inputTokens": 419623,
+      "cacheReadTokens": 5795805,
+      "cacheWriteTokens": 0,
+      "outputTokens": 167371,
+      "reasoningTokens": 0,
+      "requests": 189,
+      "toolCalls": 194,
+      "source": "request_log"
+    },
+    "byTask": {
+      "workflow-maintain": {
+        "requests": 38,
+        "inputTokens": 104110,
+        "cacheReadTokens": 975398,
+        "outputTokens": 32328
+      },
+      "workflow-discover": {
+        "requests": 39,
+        "inputTokens": 119355,
+        "cacheReadTokens": 1126096,
+        "outputTokens": 17078
+      },
+      "workflow-deepen": {
+        "requests": 18,
+        "inputTokens": 40193,
+        "cacheReadTokens": 435857,
+        "outputTokens": 10165
+      },
+      "workflow-review": {
+        "requests": 94,
+        "inputTokens": 155965,
+        "cacheReadTokens": 3258454,
+        "outputTokens": 107800
+      }
+    }
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "cycleStatus": "complete",
+      "frames": 586,
+      "checksPassed": 10,
+      "checksScored": 11,
+      "requests": 75,
+      "runtimeSeconds": 498,
+      "inputTokens": 168428,
+      "cacheReadTokens": 2348400,
+      "cacheWriteTokens": 0,
+      "outputTokens": 53487,
+      "mistakes": {
+        "steps_incomplete": 1
+      }
+    },
+    {
+      "phase": 2,
+      "cycleStatus": "complete",
+      "frames": 126,
+      "checksPassed": 1,
+      "checksScored": 2,
+      "requests": 71,
+      "runtimeSeconds": 676,
+      "inputTokens": 164389,
+      "cacheReadTokens": 2595136,
+      "cacheWriteTokens": 0,
+      "outputTokens": 94308,
+      "mistakes": {
+        "drift_forked": 1
+      }
+    },
+    {
+      "phase": 3,
+      "cycleStatus": "complete",
+      "frames": 0,
+      "checksPassed": 1,
+      "checksScored": 1,
+      "requests": 43,
+      "runtimeSeconds": 181,
+      "inputTokens": 86806,
+      "cacheReadTokens": 852269,
+      "cacheWriteTokens": 0,
+      "outputTokens": 19576,
+      "mistakes": {
+        "idle_churn": 1
+      }
+    }
+  ],
+  "stages": {
+    "discover": {
+      "modelRequests": 39,
+      "runtimeSeconds": 453,
+      "snapshotId": null,
+      "output": "Phase 1: Reconnaissance covered the full requested window 2026-10-11T09:00:40Z to 2026-10-18T09:00:40Z via /activity-summary (data_status ok, 586 frames, 78.4 active min) plus targeted /search on TextEdit, Preview, Mail, Discord. Catalog was empty (0 workflows) so no existing-entry comparison needed. Identified and handed off two distinct, evidenced candidate jobs to workflow-deepen: (1) scanned receipt/document intake reviewed in Preview and filed into tracker.csv in TextEdit, with exception handling for missing dates/duplicates/over-500 review flags - observed as a completed batch of 10 rows on 2026-10-17, single clear session, earlier recurrence unconfirmed; (2) Atlas project document intake via email from Alex Moreau - two independent occurrences this week (2026-10-14 'Project brief for Atlas', 2026-10-17 'Atlas timeline'), each following receive-attachment -> Save As to Atlas folder -> reply-confirmation pattern. Discord activity (Weekend Climbers server) and browsing (keyboards, trains, weather, bread) were reviewed and judged personal/non-recurring-work, not drafted. No local AI chat logs (~/.claude, ~/.codex, hermes) were inspected this cycle due to budget; flagging as a coverage gap for future runs. No feedback endpoint access (403, not permitted for this pipe). Bo…\n\nPhase 2: Reconnaissance complete for this cycle's window (2026-10-18T07:00:40Z-09:25:04Z). Inspected /activity-summary for the full window (data_status ok, 126 frames, 21.4 active min, single session 09:02-09:25; earlier 07:00-09:02 empty_but_recording, no capture, not a gap in coverage) and for the preceding 07:00-07:30 sub-range to confirm no missed earlier activity. Ran targeted /search (content_type=ocr/all) on TextEdit, Discord, Finder, Mail, Preview. Findings: the only work-relevant activity was another run of the already-catalogued scanned-receipt/document intake workflow (wf-ecc7ac96) — Finder Inbox -> Preview scan-0422/0423.pdf -> TextEdit tracker.csv update, filing 2 new receipts, status 'filed' for both. Notable new detail: a naming-rule-update.txt note (edited same session) documents a filename convention change from DATE_NAME_TYPE.pdf to TYPE_DATE_NAME.pdf, and the two new tracker rows already reflect it — filed as an update-note draft assigned to workflow-review rather than a new workflow, since it's the same job with an evolved procedure detail, not a distinct trigger/outcome. No Mail/Atlas activity this window (empty search), so no new instance of wf-b7616999 to report. Discord (#random Weekend Climbers chat about weekend plans) and Zen browsing (Rust releas…\n\nPhase 3: Reconnaissance for cycle window 2026-10-18T07:25:04Z-09:36:20Z. Checked /activity-summary for the full window and for the tail sub-range (09:25-09:36, which returned no_capture_in_range — last frame at 09:24:04, not a coverage gap). The full-window summary (126 frames, 21.4 active min) is the identical single session already investigated and reported by this cycle's prior workflow-discover note: Finder Inbox -> Preview scan-0422/0423.pdf -> TextEdit tracker.csv (the already-catalogued wf-ecc7ac96 scanned-receipt intake, including the naming-rule-update.txt convention change already captured in an update-note draft handed to review), plus Discord #random Weekend Climbers chat and Zen browsing (Rust release notes, bouldering grades, Paris weather) which remain personal/non-recurring. No Mail/Atlas activity this window. Checked for local AI chat logs (~/.claude/projects, ~/.codex/sessions, $HERMES_HOME) — none exist on this machine, so that residual gap is now closed (empty, not unexplored). No new distinct jobs found and no new drafts created this pass; all actionable findings were already surfaced by earlier roles in this same cycle."
+    },
+    "maintain": {
+      "modelRequests": 38,
+      "runtimeSeconds": 530,
+      "snapshotId": null,
+      "output": "Phase 1: Checked workspace context and raw catalog (GET /workflows/context): catalogRevision=0, workflows=[], drafts=[]. No saved workflows exist yet to maintain, no user corrections/feedback endpoint accessible (403, not permitted for this pipe), and no drafts assigned to this role. Nothing to investigate, correct, or enrich this cycle — the catalog is genuinely empty, not stale. No action taken; finishing with no-change decision.\n\nPhase 2: Inspected both saved workflows (wf-ecc7ac96 scanned receipt intake, wf-b7616999 Atlas email intake) and current cycle activity (2026-10-18T07:00-09:25Z) via /activity-summary and targeted OCR searches on TextEdit, Preview, Finder, Mail. Found a material, evidence-backed update to wf-ecc7ac96: naming-rule-update.txt (TextEdit, frames 614-618, 09:06) documents a filename convention change from DATE_NAME_TYPE.pdf to TYPE_DATE_NAME.pdf, confirmed applied in tracker.csv's new rows 11-12 (scan-0422/scan-0423), cross-checked against Preview Document Record panels (frames 660-662, 675-677) and final tracker.csv state (frame 690). This also confirms a 3rd distinct weekly occurrence (Oct16/17/18), partially resolving the open recurrence question. Proposed a structured correction draft (a56642ab) with concrete stage-procedure addition, new timingRun, new variation entry, and openQuestion update — complementing workflow-discover's raw observation note already queued for review on the same workflow (ab29cff2). No new Atlas/Mail activity this cycle, so wf-b7616999 was left unchanged (verified via empty Mail search). Discord and browsing activity reviewed and correctly judged personal/non-recurring. Did not inspect local AI chat logs this cycle (short window, budget prioritized the confirmed correction). No open drafts remain assigned to this role beyond those just handed to workflow-review.\n\nPhase 3: Inspected both saved workflows (wf-ecc7ac96, wf-b7616999) and the new candidate wf-91ada015 created by a prior discover/deepen pass. Found that wf-91ada015 is a duplicate catalog entry for the exact same job as wf-ecc7ac96 ('Scanned receipt/document intake and tracker filing'): identical trigger, outcome, apps, and stage structure, with wf-91ada015 simply carrying newer, superseded content (3 timingRuns including the 2026-10-18 naming-rule-update session, an updated naming-convention procedure step, confidence 4) versus wf-ecc7ac96's stale 2-run version. Proposed a merge/replace draft assigned to workflow-review that republishes this content under the original id wf-ecc7ac96 and asks Review to retire wf-91ada015 so the catalog converges to one record. Checked wf-b7616999 (Atlas email intake) against this cycle's activity via OCR search on Mail (07:25-09:36Z window) - no new occurrences, so left unchanged. No local AI chat logs inspected this cycle given the clear catalog-hygiene issue took priority within budget. No other corrections or enrichments found supported this pass."
+    },
+    "deepen": {
+      "modelRequests": 18,
+      "runtimeSeconds": 335,
+      "snapshotId": null,
+      "output": "Phase 1: Both assigned drafts deepened with independently verified evidence (no-prior-occurrence checks, Save As dialog confirmation, timing runs) and handed off to workflow-review."
+    },
+    "review": {
+      "modelRequests": 94,
+      "runtimeSeconds": 2185,
+      "snapshotId": null,
+      "output": null
+    }
+  },
+  "checks": [
+    {
+      "id": "found-p1",
+      "name": "Published: found — receipts",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "A workflow for \"receipts\" gets published.",
+      "actual": "Morgan reviews newly scanned receipt and contract PDFs (scan-0NNN.pdf) in Preview, reads extracted fields (vendor, date, amount, type) from the Document Record panel, then appends one row per document to tracker.csv in TextEdit, applying exception rules for missing dates, amounts over 500, and dupli…",
+      "reason": null,
+      "evidence": [
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "no_duplicate-p1",
+      "name": "No duplicate: no_duplicate — receipts",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "Exactly one workflow is published for \"receipts\" — no duplicate.",
+      "actual": "Morgan reviews newly scanned receipt and contract PDFs (scan-0NNN.pdf) in Preview, reads extracted fields (vendor, date, amount, type) from the Document Record panel, then appends one row per document to tracker.csv in TextEdit, applying exception rules for missing dates, amounts over 500, and dupli…",
+      "reason": null,
+      "evidence": [
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "steps-p1",
+      "name": "Keyword: steps — receipts",
+      "lens": "workflow-discovery",
+      "passed": false,
+      "expected": "Workflow text mentions all of: [rename, renamed, renaming] and [tracker, tracker.csv, csv, log, spreadsheet].",
+      "actual": "Morgan reviews newly scanned receipt and contract PDFs (scan-0NNN.pdf) in Preview, reads extracted fields (vendor, date, amount, type) from the Document Record panel, then appends one row per document to tracker.csv in TextEdit, applying exception rules for missing dates, amounts over 500, and dupli…",
+      "reason": "missing ['rename']",
+      "evidence": [
+        "seeded on screen: \"2026-10-05_Acme-Office-Supplies_receipt.pdf\"",
+        "seeded on screen: \"original_file,new_filename,date,amount,type,status,notes\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "missing_date-p1",
+      "name": "Keyword: missing_date — receipts",
+      "lens": "exception-handling",
+      "passed": true,
+      "expected": "Workflow text mentions any of: missing date, missing-date, no date, unknown-date, unknown date, undated, without a date, date is missing, date missing, lacks a date.",
+      "actual": "Morgan reviews newly scanned receipt and contract PDFs (scan-0NNN.pdf) in Preview, reads extracted fields (vendor, date, amount, type) from the Document Record panel, then appends one row per document to tracker.csv in TextEdit, applying exception rules for missing dates, amounts over 500, and dupli…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"UNKNOWN-DATE_Green-Market_receipt.pdf\"",
+        "seeded on screen: \"missing date\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "duplicate-p1",
+      "name": "Keyword: duplicate — receipts",
+      "lens": "exception-handling",
+      "passed": true,
+      "expected": "Workflow text mentions any of: duplicate, already filed, already been filed, same as, filed before, previously filed, compare, already exists.",
+      "actual": "Morgan reviews newly scanned receipt and contract PDFs (scan-0NNN.pdf) in Preview, reads extracted fields (vendor, date, amount, type) from the Document Record panel, then appends one row per document to tracker.csv in TextEdit, applying exception rules for missing dates, amounts over 500, and dupli…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"duplicate,same as 2026-10-05_Acme-Office-Supplies_receipt.pdf\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "high_value-p1",
+      "name": "Keyword: high_value — receipts",
+      "lens": "exception-handling",
+      "passed": true,
+      "expected": "Workflow text mentions any of: review needed, needs review, over 500, above 500, high amount, high-value, high value, large amount, flag.",
+      "actual": "Morgan reviews newly scanned receipt and contract PDFs (scan-0NNN.pdf) in Preview, reads extracted fields (vendor, date, amount, type) from the Document Record panel, then appends one row per document to tracker.csv in TextEdit, applying exception rules for missing dates, amounts over 500, and dupli…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"Amount: 780.00 EUR\"",
+        "seeded on screen: \"review needed\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "type_lookup-p1",
+      "name": "Keyword: type_lookup — receipts",
+      "lens": "exception-handling",
+      "passed": true,
+      "expected": "Workflow text mentions any of: client-types, client types, client list, unknown type, type is unknown, type unknown, look up the type, looks up the type, lookup.",
+      "actual": "Morgan reviews newly scanned receipt and contract PDFs (scan-0NNN.pdf) in Preview, reads extracted fields (vendor, date, amount, type) from the Document Record panel, then appends one row per document to tracker.csv in TextEdit, applying exception rules for missing dates, amounts over 500, and dupli…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"Type: UNKNOWN\"",
+        "seeded on screen: \"Northwind: contract\"",
+        "seeded on screen: \"2026-10-14_Northwind_contract.pdf\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "noise_excluded-p1",
+      "name": "Noise excluded: noise_excluded — receipts",
+      "lens": "noise-filtering",
+      "passed": true,
+      "expected": "\"Discord\" is not treated as a step.",
+      "actual": "Morgan reviews newly scanned receipt and contract PDFs (scan-0NNN.pdf) in Preview, reads extracted fields (vendor, date, amount, type) from the Document Record panel, then appends one row per document to tracker.csv in TextEdit, applying exception rules for missing dates, amounts over 500, and dupli…",
+      "reason": null,
+      "evidence": [
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "email_separate-p1",
+      "name": "Kept separate: email_separate — email",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "\"email\" stays a separate workflow from \"receipts\" (not merged).",
+      "actual": "Morgan receives project documents for the Atlas project as email attachments from Alex Moreau, opens and reviews the attachment in Preview, saves it into the Atlas folder via Save As, and replies to Alex confirming receipt.",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"Atlas-project-brief.pdf\"",
+        "seeded on screen: \"Beacon-budget-v2.pdf\"",
+        "seeded on screen: \"Atlas-timeline.pdf\"",
+        "Mail @ 2026-10-14T10:14:55.215+00:00: \"Get Mail · Compose\"",
+        "Mail @ 2026-10-14T10:16:07.684+00:00: \"Save As: · Atlas-project-brief.pdf\"",
+        "Mail @ 2026-10-14T10:17:10.750+00:00: \"Get Mail · Compose\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "one_off_unpublished-p1",
+      "name": "Stays unpublished: one_off_unpublished — printer",
+      "lens": "workflow-discovery",
+      "passed": true,
+      "expected": "\"printer\" is a one-off — it should NOT be published.",
+      "actual": "No workflow published for \"printer\" (correct).",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"Printers & Scanners\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "evidence_resolves-p1",
+      "name": "Evidence: evidence_resolves",
+      "lens": "evidence-validity",
+      "passed": true,
+      "expected": "Every citation in every published workflow resolves to a real seeded frame.",
+      "actual": "2 workflow(s) in the published catalog this phase.",
+      "reason": null,
+      "evidence": null,
+      "inStages": null
+    },
+    {
+      "id": "drift-p2",
+      "name": "Drift: drift — receipts",
+      "lens": "workflow-discovery",
+      "passed": false,
+      "expected": "The existing \"receipts\" workflow adapts in place (not forked) to mention: TYPE_DATE_NAME, type first, type, date, type_date_name, receipt_2026-10-15_Hardware-Store.pdf.",
+      "actual": "Morgan reviews newly scanned receipt and contract PDFs (scan-0NNN.pdf) in Preview, reads extracted fields (vendor, date, amount, type) from the Document Record panel, then appends one row per document to tracker.csv in TextEdit, applying exception rules for missing dates, amounts over 500, and dupli…",
+      "reason": null,
+      "evidence": [
+        "seeded on screen: \"New: TYPE_DATE_NAME.pdf\"",
+        "seeded on screen: \"receipt_2026-10-15_Hardware-Store.pdf\"",
+        "TextEdit @ 2026-10-17T11:29:54.697+00:00: \"tracker.csv · original_file,new_filename,date,amount,type,status,notes\"",
+        "Preview @ 2026-10-17T11:28:22.677+00:00: \"scan-0421.pdf · Page 1 of 1\""
+      ],
+      "inStages": null
+    },
+    {
+      "id": "evidence_resolves-p2",
+      "name": "Evidence: evidence_resolves",
+      "lens": "evidence-validity",
+      "passed": true,
+      "expected": "Every citation in every published workflow resolves to a real seeded frame.",
+      "actual": "3 workflow(s) in the published catalog this phase.",
+      "reason": null,
+      "evidence": null,
+      "inStages": null
+    },
+    {
+      "id": "evidence_resolves-p3",
+      "name": "Evidence: evidence_resolves",
+      "lens": "evidence-validity",
+      "passed": true,
+      "expected": "Every citation in every published workflow resolves to a real seeded frame.",
+      "actual": "3 workflow(s) in the published catalog this phase.",
+      "reason": null,
+      "evidence": null,
+      "inStages": null
+    }
+  ],
+  "workflows": [
+    {
+      "id": "wf-0",
+      "title": "Scanned receipt/document intake and tracker filing",
+      "steps": [
+        "Review scanned document",
+        "File into tracker.csv with exception handling and current naming convention"
+      ],
+      "matchedTo": "receipts",
+      "trigger": "A batch of new scanned documents (scan-0NNN.pdf) is ready for review; exact arrival mechanism not directly observed",
+      "outcome": "tracker.csv updated with one row per scanned document, exceptions flagged inline (UNKNOWN-DATE, review needed, duplicate); filenames now follow TYPE_DATE_NAME.pdf as of 2026-10-18",
+      "variations": [
+        "Missing date: filename prefixed UNKNOWN-DATE, notes 'missing date' (scan-0415.pdf)",
+        "Amount over 500: status 'review needed', notes 'over 500' (scan-0418.pdf, 780.00)",
+        "Duplicate row: status 'duplicate', notes reference matching filename (scan-0417.pdf)",
+        "Type inferred from client list (scan-0420.pdf)",
+        "Naming convention changed 2026-10-18 from DATE_NAME_TYPE.pdf to TYPE_DATE_NAME.pdf per naming-rule-update.txt; applied to scan-0422/scan-0423, earlier rows keep old pattern"
+      ],
+      "limitations": [
+        "Only final tracker.csv states observed via OCR; keystroke-level entry not captured",
+        "No evidence of trigger mechanism",
+        "Observed on 3 distinct days so far (2026-10-16, 2026-10-17, 2026-10-18), suggesting recurrence but longer history not available",
+        "No ordered capture example covers every step. These references do not establish one end-to-end occurrence.",
+        "No ordered capture example covers every step. These references do not establish one end-to-end occurrence."
+      ],
+      "confidence": 4
+    },
+    {
+      "id": "wf-1",
+      "title": "Atlas project document intake via email",
+      "steps": [
+        "Receive and review attachment",
+        "Save attachment to Atlas folder",
+        "Reply confirming receipt"
+      ],
+      "matchedTo": "email",
+      "trigger": "Email arrives in Mail inbox from Alex Moreau with a project document attached (PDF) for the Atlas project",
+      "outcome": "Document saved into the Atlas folder and sender notified by reply confirming receipt",
+      "variations": [
+        "Observed twice this week with different documents: Atlas-project-brief.pdf (Oct 14) and Atlas-timeline.pdf (Oct 17)"
+      ],
+      "limitations": [
+        "Only two occurrences observed this week (Oct 14 and Oct 17); no occurrences found before Oct 13 in available history, so longer-term recurrence is unconfirmed.",
+        "File system write was not independently verified outside the Save As dialog confirmation (Where: Atlas) and Finder listing; no direct Atlas folder content check was performed.",
+        "No ordered capture example covers every step. These references do not establish one end-to-end occurrence."
+      ],
+      "confidence": 4
+    }
+  ]
+}

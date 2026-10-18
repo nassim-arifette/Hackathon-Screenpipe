@@ -58,8 +58,9 @@ and counted in `provenance.sanitization`.
 
 ## Comparability
 
-Two runs only compare in Step 04 when they share suite, seed, repeat, phases and
-test-data hashes (`conditions`). Runs from other conditions are listed but are never paired.
+Two runs only compare in Step 04 when they share suite, seed, phases and
+test-data hashes (`conditions`). `repeat` (the `-rN` of the id) is recorded but does not
+block a pair: two replicates of the same test are comparable. Runs from other conditions are listed but are never paired.
 
 ## Limitation: stage runs
 
@@ -67,3 +68,16 @@ Stage runs (`wfeval stage …`, e.g. a Clearer-rejection Review replay) grade on
 saved workspace, not a full cycle, so their scores are **not** comparable to full
 evaluations. The exporter refuses them (`stage run, not a full evaluation`) and Local runs
 doesn't list them. A separate stage format is not defined yet.
+
+## Adding an LLM-judge review to a pair
+
+Compare shows a judge's verdict next to the automatic checks only when a review file for
+exactly that pair exists in `demo-data/reviews/`. Build it from the judge's own folder:
+
+```sh
+npm run import-judge -- ../eval/judge <baselineRunId> <variantRunId>
+```
+
+It refuses unless the judge's `build.py` names both runs and every judgment in `key.json` has a
+result. The file keeps verdicts and scores (never the judges' free text) and the sha256 of
+every input. Read it before committing.

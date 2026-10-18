@@ -22,6 +22,21 @@ import { Eyebrow, GhostButton, PrimaryButton, Select } from '../components/ui';
 const mock = mockJson as RawExperimentBundle;
 
 /**
+ * The run a card is compared against. A variant pairs with the newest baseline of identical
+ * test conditions (suite, seed, phases, data); a baseline pairs with the newest variant. Runs
+ * of other conditions never pair, so a Step 04 comparison is always like for like.
+ */
+function partnerOf(r: RunSummary, runs: RunSummary[]): RunSummary | undefined {
+  const rivals = runs.filter((x) => x.id !== r.id && x.variant !== r.variant && x.conditions === r.conditions);
+  const baselines = rivals.filter((x) => x.variant === 'baseline');
+  const pool = r.variant === 'baseline' || baselines.length === 0 ? rivals : baselines;
+  return [...pool].sort((a, b) => (b.finishedAt ?? '').localeCompare(a.finishedAt ?? ''))[0];
+}
+
+/** "r5" from a run id ending in -r5. */
+const replicateOf = (id: string) => id.match(/-(r\d+)$/)?.[1];
+
+/**
  * Step 01 — the only place an experiment gets chosen or produced. Deliberately shows
  * no quality score, request count or runtime: those belong to later steps. Two real
  * paths, both backed by the pipeops server (server/index.mjs):
@@ -32,11 +47,9 @@ const mock = mockJson as RawExperimentBundle;
  */
 export function LoadView({
   onLoad,
-  standalone,
   currentRunId,
 }: {
   onLoad: (bundle: RawExperimentBundle, runId: string, origin: DataOrigin) => void;
-  standalone?: boolean;
   currentRunId?: string;
 }) {
   const [source, setSource] = useState<'demo' | 'local'>('demo');
@@ -92,9 +105,7 @@ export function LoadView({
       // 04) has something real to compare against instead of the run against itself.
       // Only runs with identical test conditions (suite, seed, phases, data) qualify.
       const picked = runs?.find((r) => r.id === id);
-      const partner = runs
-        ?.filter((r) => r.id !== id && r.variant !== picked?.variant && r.conditions === picked?.conditions)
-        .sort((a, b) => (b.finishedAt ?? '').localeCompare(a.finishedAt ?? ''))[0];
+      const partner = picked && runs ? partnerOf(picked, runs) : undefined;
       // Whichever of the two is actually named "baseline" takes the baseline slot,
       // regardless of which one was clicked.
       const [baselineId, variantId] =
@@ -137,27 +148,26 @@ export function LoadView({
   return (
     <div className="flex h-full flex-col overflow-y-auto px-[120px] py-[72px]">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-        <Eyebrow>{standalone ? 'Welcome to the lab' : 'Step 01'} · Load experiment</Eyebrow>
-        <h1 className="mt-5 text-[60px] font-semibold leading-[1.02] tracking-tightest text-ink-50">
+        <h1 className="text-[76px] font-semibold leading-[1.02] tracking-tightest text-ink-50">
           Select or run an experiment.
         </h1>
-        <p className="mt-5 max-w-[860px] text-[17px] leading-relaxed text-ink-300">
-          See how Screenpipe's agents turn recorded activity into reusable workflows.{' '}
-          <span className="text-ink-100">Browsing is free. A model only runs when you start one.</span>
+        <p className="mt-5 max-w-[1040px] text-[21px] leading-relaxed text-ink-300">
+          See how Screenpipe's agents turn recorded activity into workflows.{' '}
+          <span className="text-ink-100">Browsing is free.</span>
         </p>
       </motion.div>
 
       {backendError && (
         <div className="mt-8 rounded-2xl border border-cost/40 bg-cost/[0.06] p-5">
-          <div className="text-[15px] font-medium text-cost">pipeops server not reachable</div>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-ink-300">
+          <div className="text-[18px] font-medium text-cost">pipeops server not reachable</div>
+          <p className="mt-1.5 text-[16px] leading-relaxed text-ink-300">
             {backendError} — start it with <code className="rounded bg-ink-900 px-1.5 py-0.5 font-mono">npm run server</code> inside{' '}
             <code className="rounded bg-ink-900 px-1.5 py-0.5 font-mono">pipeops/</code>, then retry. The app will not quietly show
             placeholder data instead — you choose.
           </p>
           <div className="mt-3 flex gap-2">
-            <GhostButton onClick={refresh}>Retry</GhostButton>
-            <GhostButton onClick={loadMock}>Continue with mock placeholder</GhostButton>
+            <GhostButton size="lg" onClick={refresh}>Retry</GhostButton>
+            <GhostButton size="lg" onClick={loadMock}>Continue with mock placeholder</GhostButton>
           </div>
         </div>
       )}
@@ -166,15 +176,15 @@ export function LoadView({
         {/* A — explore recorded runs */}
         <section className="flex min-h-0 flex-col">
           <div className="flex items-center justify-between">
-            <Eyebrow>A · Explore recorded runs</Eyebrow>
-            <GhostButton onClick={refresh}>refresh</GhostButton>
+            <Eyebrow size="xl">A · Explore recorded runs</Eyebrow>
+            <GhostButton size="lg" onClick={refresh}>refresh</GhostButton>
           </div>
           <div className="mt-4 flex gap-2">
             {(['demo', 'local'] as const).map((s) => (
               <button
                 key={s}
                 onClick={() => setSource(s)}
-                className={`rounded-full border px-4 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.12em] transition-colors ${
+                className={`rounded-full border px-5 py-2 font-mono text-[14px] uppercase tracking-[0.12em] transition-colors ${
                   source === s ? 'border-signal/70 text-signal' : 'border-ink-700 text-ink-400 hover:border-ink-500'
                 }`}
               >
@@ -183,55 +193,63 @@ export function LoadView({
             ))}
           </div>
           <div className="mt-5 flex-1 space-y-3 overflow-y-auto pr-2">
-            {runs === null && !backendError && <p className="font-mono text-[13px] text-ink-500">loading runs…</p>}
-            {runs?.length === 0 && source === 'local' && <p className="text-[14px] text-ink-500">No completed runs in eval/runs/ yet. Run one on the right.</p>}
-            {runs?.length === 0 && source === 'demo' && <p className="text-[14px] text-ink-500">No demo runs in pipeops/demo-data/ yet. See demo-data/CONTRIBUTING.md.</p>}
-            {runs?.map((r) => (
-              <RunCard key={r.id} r={r} active={r.id === currentRunId} loading={loadingId === r.id} onClick={() => loadRecorded(r.id)} />
-            ))}
+            {runs === null && !backendError && <p className="font-mono text-[16px] text-ink-400">loading runs…</p>}
+            {runs?.length === 0 && source === 'local' && <p className="text-[17px] text-ink-400">No completed runs in eval/runs/ yet. Run one on the right.</p>}
+            {runs?.length === 0 && source === 'demo' && <p className="text-[17px] text-ink-400">No demo runs in pipeops/demo-data/ yet. See demo-data/CONTRIBUTING.md.</p>}
+            {runs
+              // A baseline that some variant is compared against is shown on that variant's card, not twice.
+              ?.filter((r) => r.variant !== 'baseline' || !runs.some((x) => x.variant !== 'baseline' && partnerOf(x, runs)?.id === r.id))
+              .map((r) => {
+                const partner = partnerOf(r, runs);
+                const pairedWith = partner ? [partner.variant ?? partner.id, replicateOf(partner.id)].filter(Boolean).join(' ') : undefined;
+                return (
+                  <RunCard key={r.id} r={r} pairedWith={pairedWith} active={r.id === currentRunId} loading={loadingId === r.id} onClick={() => loadRecorded(r.id)} />
+                );
+              })}
           </div>
         </section>
 
         {/* B — run a new experiment */}
         <section className="flex min-h-0 flex-col border-l border-ink-800 pl-14">
-          <Eyebrow>B · Run new experiment</Eyebrow>
-          <p className="mt-3 text-[13px] leading-relaxed text-ink-400">
-            Executes the real harness on this machine — a genuine model-calling cycle. Takes roughly 8–15 minutes per
-            phase and spends the account's AI allowance. Quit the screenpipe desktop app first; both use port 3030.
+          <Eyebrow size="xl">B · Run new experiment</Eyebrow>
+          <p className="mt-3 text-[19px] leading-relaxed text-ink-400">
+            Runs the real agents here: 8–15 min per phase, uses AI allowance. Quit the screenpipe app first.
           </p>
 
-          <div className="mt-6 flex flex-col gap-3">
-            <Labeled label="variant">
+          <div className="mt-7 flex flex-col gap-4">
+            <Labeled size="xl" label="variant">
               <Select
                 value={form.variant}
                 onChange={(v) => setForm((f) => ({ ...f, variant: v }))}
                 options={(variants ?? []).map((v) => ({ value: v.file, label: v.name }))}
                 disabled={running}
                 placeholder="choose a variant"
+                size="xl"
               />
             </Labeled>
             <div className="flex gap-3">
-              <Labeled label="suite">
+              <Labeled size="xl" label="suite">
                 <Select
                   value={form.suite}
                   onChange={(v) => setForm((f) => ({ ...f, suite: v }))}
                   options={(suites.length ? suites : [{ name: form.suite, description: '' }]).map((x) => ({ value: x.name, label: x.name }))}
                   disabled={running}
+                  size="xl"
                 />
               </Labeled>
-              <Labeled label="seed">
+              <Labeled size="xl" label="seed">
                 <input
                   type="number"
-                  className="w-full rounded-lg border border-ink-700 bg-ink-900 px-3 py-2 font-mono text-[13px] text-ink-100"
+                  className="w-full rounded-lg border border-ink-700 bg-ink-900 px-3.5 py-3 font-mono text-[19px] text-ink-100"
                   value={form.seed}
                   onChange={(e) => setForm((f) => ({ ...f, seed: Number(e.target.value) }))}
                   disabled={running}
                 />
               </Labeled>
-              <Labeled label="phases">
+              <Labeled size="xl" label="phases">
                 <input
                   type="number"
-                  className="w-full rounded-lg border border-ink-700 bg-ink-900 px-3 py-2 font-mono text-[13px] text-ink-100"
+                  className="w-full rounded-lg border border-ink-700 bg-ink-900 px-3.5 py-3 font-mono text-[19px] text-ink-100"
                   value={form.phases}
                   onChange={(e) => setForm((f) => ({ ...f, phases: Number(e.target.value) }))}
                   disabled={running}
@@ -242,18 +260,18 @@ export function LoadView({
             <CustomSuites suites={suites} onChange={refresh} onUse={(name) => setForm((f) => ({ ...f, suite: name }))} disabled={running} />
 
             {!confirming ? (
-              <PrimaryButton className="self-start" onClick={() => setConfirming(true)} disabled={running || !form.variant}>
+              <PrimaryButton size="xl" className="self-start" onClick={() => setConfirming(true)} disabled={running || !form.variant}>
                 {running ? 'Running…' : 'Run new experiment'}
               </PrimaryButton>
             ) : (
               <div className="flex items-center gap-3 rounded-xl border border-cost/40 bg-cost/[0.06] p-3">
-                <span className="text-[12px] leading-snug text-cost">
-                  This spends real AI allowance and takes several minutes. Continue?
+                <span className="text-[17px] leading-snug text-cost">
+                  Uses real AI allowance and takes several minutes. Continue?
                 </span>
-                <PrimaryButton className="shrink-0" onClick={startRun}>
+                <PrimaryButton size="xl" className="shrink-0" onClick={startRun}>
                   Confirm
                 </PrimaryButton>
-                <GhostButton className="shrink-0" onClick={() => setConfirming(false)}>
+                <GhostButton size="xl" className="shrink-0" onClick={() => setConfirming(false)}>
                   Cancel
                 </GhostButton>
               </div>
@@ -261,7 +279,7 @@ export function LoadView({
           </div>
 
           {log && (
-            <div ref={logRef} className="mt-5 h-44 overflow-y-auto rounded-lg border border-ink-700 bg-ink-950 p-3 font-mono text-[11px] text-ink-300">
+            <div ref={logRef} className="mt-5 h-44 overflow-y-auto rounded-lg border border-ink-700 bg-ink-950 p-3 font-mono text-[15px] text-ink-300">
               <pre className="whitespace-pre-wrap">{log}</pre>
             </div>
           )}
@@ -341,11 +359,11 @@ function CustomSuites({
     <div className="rounded-xl border border-ink-700 bg-ink-900/60">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left"
+        className="flex w-full items-center justify-between px-4 py-3.5 text-left"
         aria-expanded={open}
       >
-        <span className="font-mono text-[11px] uppercase tracking-widest text-ink-400">Custom test suites</span>
-        <span className="flex items-center gap-3 text-[12px] text-ink-500">
+        <span className="font-mono text-[15px] uppercase tracking-widest text-ink-400">Custom test suites</span>
+        <span className="flex items-center gap-3 text-[17px] text-ink-400">
           {custom.length} yours
           <span className={`inline-block transition-transform ${open ? 'rotate-90' : ''}`}>›</span>
         </span>
@@ -353,20 +371,19 @@ function CustomSuites({
 
       {open && (
         <div className="space-y-3 border-t border-ink-800 px-4 pb-4 pt-3">
-          <p className="text-[12px] leading-snug text-ink-400">
-            Add your own complete test: the jobs hidden in a week of activity, what they look like on screen, and the checks the
-            agents are graded on. Pick it in <span className="text-ink-200">suite</span> above. Runs of different suites can't be compared.
+          <p className="text-[17px] leading-snug text-ink-400">
+            Your own test: hidden jobs, how they look on screen, and the checks. Pick it in <span className="text-ink-200">suite</span> above.
           </p>
 
           {custom.length > 0 && (
             <ul className="space-y-1.5">
               {custom.map((s) => (
-                <li key={s.name} className="flex items-center justify-between gap-3 rounded-lg bg-ink-950/60 px-3 py-1.5 text-[12px] text-ink-200">
+                <li key={s.name} className="flex items-center justify-between gap-3 rounded-lg bg-ink-950/60 px-3 py-2 text-[17px] text-ink-200">
                   <span className="min-w-0 truncate font-mono">
                     {s.name}
-                    <span className="text-ink-500">{s.broken ? ' · unreadable' : ` · ${s.jobs} jobs · ${s.checks} checks`}</span>
+                    <span className="text-ink-400">{s.broken ? ' · unreadable' : ` · ${s.jobs} jobs · ${s.checks} checks`}</span>
                   </span>
-                  <span className="flex shrink-0 gap-3 text-ink-500">
+                  <span className="flex shrink-0 gap-3 text-ink-400">
                     <button className="hover:text-signal" onClick={() => edit(s.name)}>edit</button>
                     <button className="hover:text-cost disabled:opacity-40" disabled={disabled} onClick={() => remove(s.name)}>remove</button>
                   </span>
@@ -376,33 +393,33 @@ function CustomSuites({
           )}
 
           <label className="flex flex-col gap-1.5">
-            <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">suite name</span>
+            <span className="font-mono text-[15px] uppercase tracking-widest text-ink-400">suite name</span>
             <input
-              className="w-full rounded-lg border border-ink-700 bg-ink-900 px-3 py-2 font-mono text-[13px] text-ink-100"
+              className="w-full rounded-lg border border-ink-700 bg-ink-900 px-3.5 py-3 font-mono text-[19px] text-ink-100"
               value={name}
               placeholder="my-suite"
               onChange={(e) => setName(e.target.value)}
             />
           </label>
           <label className="flex flex-col gap-1.5">
-            <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">suite definition (JSON)</span>
+            <span className="font-mono text-[15px] uppercase tracking-widest text-ink-400">suite definition (JSON)</span>
             <textarea
-              className="h-48 w-full resize-y rounded-lg border border-ink-700 bg-ink-950 p-3 font-mono text-[12px] leading-snug text-ink-100"
+              className="h-48 w-full resize-y rounded-lg border border-ink-700 bg-ink-950 p-3 font-mono text-[16px] leading-snug text-ink-100"
               value={text}
               spellCheck={false}
               placeholder='{"jobs": {…}, "phases": {"1": […]}, "checks": […]}'
               onChange={(e) => setText(e.target.value)}
             />
           </label>
-          {error && <pre className="whitespace-pre-wrap rounded-lg border border-cost/40 bg-cost/[0.06] p-3 font-mono text-[11.5px] text-cost">{error}</pre>}
+          {error && <pre className="whitespace-pre-wrap rounded-lg border border-cost/40 bg-cost/[0.06] p-3 font-mono text-[16px] text-cost">{error}</pre>}
           <div className="flex flex-wrap items-center gap-2">
-            <PrimaryButton onClick={save} disabled={saving || !name.trim() || !text.trim()}>
+            <PrimaryButton size="xl" onClick={save} disabled={saving || !name.trim() || !text.trim()}>
               {saving ? 'Checking…' : 'Save suite'}
             </PrimaryButton>
             {suites.some((s) => s.name === 'standup') && (
-              <GhostButton onClick={() => edit('standup').then(() => setName(''))}>Start from example</GhostButton>
+              <GhostButton size="xl" onClick={() => edit('standup').then(() => setName(''))}>Start from example</GhostButton>
             )}
-            <label className="cursor-pointer rounded-full border border-ink-700 px-4 py-1.5 text-[13px] text-ink-300 hover:border-ink-500">
+            <label className="cursor-pointer rounded-full border border-ink-700 px-5 py-2.5 text-[18px] text-ink-300 hover:border-ink-500">
               Upload .json
               <input type="file" accept="application/json,.json" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
             </label>
@@ -413,39 +430,40 @@ function CustomSuites({
   );
 }
 
-function Labeled({ label, children }: { label: string; children: React.ReactNode }) {
+function Labeled({ label, children, size = 'lg' }: { label: string; children: React.ReactNode; size?: 'lg' | 'xl' }) {
   return (
-    <label className="flex flex-1 flex-col gap-1.5">
-      <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">{label}</span>
+    <label className="flex flex-1 flex-col gap-2">
+      <span className={`font-mono ${size === 'xl' ? 'text-[15px]' : 'text-[13px]'} uppercase tracking-widest text-ink-400`}>{label}</span>
       {children}
     </label>
   );
 }
 
 /** Metadata only — no score, requests or runtime. Those are revealed inside the lab. */
-function RunCard({ r, active, loading, onClick }: { r: RunSummary; active: boolean; loading: boolean; onClick: () => void }) {
+function RunCard({ r, pairedWith, active, loading, onClick }: { r: RunSummary; pairedWith?: string; active: boolean; loading: boolean; onClick: () => void }) {
   const when = r.finishedAt ? new Date(r.finishedAt).toLocaleString() : '—';
   return (
     <button
       onClick={onClick}
       disabled={loading}
-      className={`group flex w-full items-center justify-between rounded-2xl border px-6 py-5 text-left transition-colors ${
+      className={`group flex w-full items-center justify-between rounded-2xl border px-7 py-6 text-left transition-colors ${
         active ? 'border-signal/70 bg-ink-900' : 'border-ink-700 bg-ink-900/60 hover:border-ink-500'
       }`}
     >
       <div>
         <div className="flex items-center gap-3">
-          <span className="text-[22px] font-semibold tracking-tight text-ink-50">{r.variant ?? r.id}</span>
-          <span className="rounded-full border border-ink-600 px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-ink-300">
+          <span className="text-[28px] font-semibold tracking-tight text-ink-50">{r.variant ?? r.id}</span>
+          <span className="rounded-full border border-ink-600 px-2.5 py-0.5 font-mono text-[12.5px] uppercase tracking-[0.12em] text-ink-300">
             complete
           </span>
         </div>
-        <div className="mt-1.5 font-mono text-[12px] text-ink-500">
+        <div className="mt-2 font-mono text-[15px] text-ink-400">
           suite {r.suite ?? '—'} · seed {r.seed ?? '—'} · phase{r.phases.length > 1 ? 's' : ''} {r.phases.join(', ')}
         </div>
-        <div className="mt-1 font-mono text-[11px] text-ink-600">finished {when}</div>
+        {pairedWith && <div className="mt-1 text-[15.5px] text-ink-300">compared with {pairedWith}</div>}
+        <div className="mt-1 font-mono text-[13.5px] text-ink-500">finished {when}</div>
       </div>
-      <span className={`text-[13px] font-medium ${loading ? 'text-signal' : 'text-ink-300 group-hover:text-signal'}`}>
+      <span className={`text-[16px] font-medium ${loading ? 'text-signal' : 'text-ink-300 group-hover:text-signal'}`}>
         {loading ? 'Loading…' : 'Load →'}
       </span>
     </button>

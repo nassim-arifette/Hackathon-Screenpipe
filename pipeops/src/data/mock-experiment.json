@@ -15,25 +15,25 @@
     {
       "id": "discover",
       "name": "Discover",
-      "summary": "Finds candidate workflows in recorded activity.",
+      "summary": "Finds candidate workflows.",
       "summaryStatus": "draft"
     },
     {
       "id": "maintain",
       "name": "Maintain",
-      "summary": "Updates and merges the workflow set.",
+      "summary": "Merges and updates workflows.",
       "summaryStatus": "draft"
     },
     {
       "id": "deepen",
       "name": "Deepen",
-      "summary": "Adds steps, exceptions and evidence.",
+      "summary": "Adds steps and exceptions.",
       "summaryStatus": "draft"
     },
     {
       "id": "review",
       "name": "Review",
-      "summary": "Checks the workflows before output.",
+      "summary": "Checks before publishing.",
       "summaryStatus": "draft"
     }
   ],
