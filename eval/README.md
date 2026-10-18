@@ -68,6 +68,14 @@ On a Nix-managed Mac, `cargo` must use Apple's toolchain: run `setup-engine.sh` 
 `nix shell nixpkgs#rustup nixpkgs#pkg-config` with `PATH=/usr/bin:$PATH CC=/usr/bin/cc
 CXX=/usr/bin/c++ AR=/usr/bin/ar CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER=/usr/bin/cc`.
 
+On Linux (Ubuntu/Debian, x86_64 or arm64), run `./setup-linux.sh` first (sudo): it
+installs the engine's build deps, OpenBLAS where the build looks for it, qemu binfmt on
+x86_64 (the sandbox image is arm64), the app's `bun` and an `ffmpeg` in `.engines/app`,
+and `/Users/Shared/wfeval`, the same run path as on a Mac. The steps above then work
+as written; `setup-engine.sh` builds without `metal`, and on glibc older than 2.38
+(Ubuntu 22.04) links small forwarders for the `__isoc23_strto*` symbols that ort's
+prebuilt ONNX Runtime needs. Copies use `cp --reflink=auto` instead of APFS clones.
+
 ## Use
 
 One phase (8 to 15 minutes; with Sonnet 5, 45 to 120 model requests and over a million

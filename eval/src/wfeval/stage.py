@@ -31,7 +31,6 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
-import subprocess
 import sys
 import time
 from collections import Counter
@@ -40,7 +39,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from . import generate
-from .engine import ACTIVE, EVAL_TZ, SLOTS, TASKS, Engine, clone_template
+from .engine import ACTIVE, EVAL_TZ, SLOTS, TASKS, Engine, clone_template, copy_tree
 from .grade import clipped, grade_phase, truth_id, ts
 from .run import (ROOT, classify, collect_logs, harness, install_overrides, live_slot, model_fallback,
                   provenance, seal, wait_for_room)
@@ -68,11 +67,11 @@ def stamp() -> str:
 # ------------------------------------------------------------------------ state
 
 def save_state(data_dir: Path, dest: Path) -> None:
-    """APFS clones of STATE, with the engine stopped (the index is SQLite with a WAL)."""
+    """Clones of STATE (`copy_tree`), with the engine stopped (the index is SQLite with a WAL)."""
     dest.mkdir(parents=True)
     for name in STATE:
         if (data_dir / name).exists():
-            subprocess.run(["/bin/cp", "-cRp", str(data_dir / name), str(dest / name)], check=True)
+            copy_tree(data_dir / name, dest / name, preserve=True)
     for pattern in DROP:
         for p in list(dest.rglob(pattern)):
             shutil.rmtree(p) if p.is_dir() else p.unlink()
@@ -101,7 +100,7 @@ def restore_state(state: Path, data_dir: Path, root_then: str, root_now: Path) -
         elif target.exists():
             target.unlink()
         if (state / name).exists():
-            subprocess.run(["/bin/cp", "-cRp", str(state / name), str(target)], check=True)
+            copy_tree(state / name, target, preserve=True)
     if login and store.exists():
         scrub_store(store)  # older snapshots kept the login of the Mac that took them
         restored = json.loads(store.read_text())

@@ -18,6 +18,7 @@ import shutil
 import socket
 import struct
 import subprocess
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -29,11 +30,15 @@ ROOT = Path(__file__).resolve().parents[2]
 ENGINES = ROOT / ".engines"
 BINARY = ENGINES / "target" / "debug" / "screenpipe"
 TEMPLATE = ENGINES / "template"
-APP = Path("/Applications/screenpipe.app/Contents/MacOS")  # bun and ffmpeg the app ships
+MACOS = sys.platform == "darwin"
+# bun and ffmpeg the app ships; on Linux, setup-linux.sh puts the same bun and an ffmpeg there.
+APP = Path("/Applications/screenpipe.app/Contents/MacOS") if MACOS else ENGINES / "app"
 # What the agents see of the machine, the same everywhere. UTC: no DST shift between runs.
 EVAL_TZ = "UTC"
 EVAL_USER = "eval"
-LIVE = Path("/Users/Shared/wfeval/live")  # exists on every Mac; no AGENTS.md above it
+# Exists on every Mac; no AGENTS.md above it. Linux uses the same path (setup-linux.sh
+# creates it) so agents see the same paths there too.
+LIVE = Path("/Users/Shared/wfeval/live")
 PORT = 3036
 SLOTS = 4  # runs at once per Mac
 
@@ -57,6 +62,15 @@ class EngineError(Exception):
     pass
 
 
+def copy_tree(src: Path, dest: Path, preserve: bool = False) -> None:
+    """A clone where the filesystem has them (APFS `cp -c`, `--reflink` on Linux), else a copy."""
+    if MACOS:
+        cmd = ["/bin/cp", "-cRp" if preserve else "-cR"]
+    else:
+        cmd = ["cp", "--reflink=auto", "-Rp" if preserve else "-R"]
+    subprocess.run([*cmd, str(src), str(dest)], check=True)
+
+
 def free_port() -> int:
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
@@ -72,8 +86,11 @@ def blank_jpeg(path: Path) -> Path:
     chunk = lambda t, d: struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d))
     png.write_bytes(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 0))
                     + chunk(b"IDAT", zlib.compress(raw)) + chunk(b"IEND", b""))
-    subprocess.run(["/usr/bin/sips", "-s", "format", "jpeg", str(png), "--out", str(path)],
-                   check=True, capture_output=True)
+    if MACOS:
+        cmd = ["/usr/bin/sips", "-s", "format", "jpeg", str(png), "--out", str(path)]
+    else:
+        cmd = [str(APP / "ffmpeg"), "-y", "-loglevel", "error", "-i", str(png), str(path)]
+    subprocess.run(cmd, check=True, capture_output=True)
     png.unlink()
     return path
 
@@ -91,10 +108,10 @@ def clone_template(dest: Path) -> None:
     if not (TEMPLATE / "home" / ".screenpipe").exists():
         raise EngineError("no template: run `wfeval template` first")
     dest.mkdir(parents=True, exist_ok=True)
-    # APFS clone: a copy in O(1) that shares blocks until written.
+    # A clone (copy_tree): a copy in O(1) that shares blocks until written.
     # -p calls chflags on Bun's absolute cache symlinks and fails with ELOOP on
     # macOS 26. -R retains the private file modes needed for the copied login.
-    subprocess.run(["/bin/cp", "-cR", str(TEMPLATE / "home"), str(dest / "home")], check=True)
+    copy_tree(TEMPLATE / "home", dest / "home")
 
 
 @dataclass

@@ -6,6 +6,7 @@
 # .engines/wf-<variant> with patches/harness.patch and patches/variants/<variant>.patch
 # applied, built into .engines/target-wf-<variant>, the paths variants/<variant>.json
 # names. Same files on every Mac, so run.json records the same engine changes.
+# On Linux, run ./setup-linux.sh once first.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 commit=a8aaee2d6348aa1a0578981098fe97c2ec46d32a
@@ -41,5 +42,29 @@ if [ -n "${1:-}" ]; then
   src=$wt
 fi
 cd "$src"
-CARGO_TARGET_DIR=$target cargo build -p screenpipe-engine --bin screenpipe --features metal
+features=()
+if [ "$(uname -s)" = Darwin ]; then
+  features=(--features metal)
+else
+  # Linux: the system OpenBLAS, laid out the way screenpipe's release-cli.yml does (setup-linux.sh).
+  export OPENBLAS_PATH=${OPENBLAS_PATH:-/usr/lib/$(gcc -print-multiarch)/openblas}
+  # ort's prebuilt onnxruntime calls glibc 2.38's __isoc23_strto*; on older glibc
+  # (Ubuntu 22.04) link forwarders to the classic functions.
+  if [ "$(printf '%s\n' "$(ldd --version | head -1 | grep -oE '[0-9]+\.[0-9]+$')" 2.38 | sort -V | head -1)" != 2.38 ]; then
+    compat=$here/.engines/glibc-compat
+    mkdir -p "$compat"
+    printf '%s\n' '#include <stdlib.h>' \
+      'long __isoc23_strtol(const char *s, char **e, int b) { return strtol(s, e, b); }' \
+      'long long __isoc23_strtoll(const char *s, char **e, int b) { return strtoll(s, e, b); }' \
+      'unsigned long __isoc23_strtoul(const char *s, char **e, int b) { return strtoul(s, e, b); }' \
+      'unsigned long long __isoc23_strtoull(const char *s, char **e, int b) { return strtoull(s, e, b); }' \
+      > "$compat/isoc23.c"
+    cc -O2 -fPIC -c "$compat/isoc23.c" -o "$compat/isoc23.o"
+    printf '#!/bin/sh\nexec cc "$@" %s\n' "$compat/isoc23.o" > "$compat/cc"
+    chmod +x "$compat/cc"
+    triple=$(uname -m | tr a-z A-Z)_UNKNOWN_LINUX_GNU
+    export "CARGO_TARGET_${triple}_LINKER=$compat/cc"
+  fi
+fi
+CARGO_TARGET_DIR=$target cargo build -p screenpipe-engine --bin screenpipe "${features[@]}"
 echo "engine: $target/debug/screenpipe"

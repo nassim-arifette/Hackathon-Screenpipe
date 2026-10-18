@@ -43,7 +43,7 @@ def test_refuses_ungrounded_check(monkeypatch):
                                       "any": ["x"], "on_screen": ["text no frame shows"]})
         return suite
 
-    monkeypatch.setitem(generate.SUITES, "receipts", broken)
+    monkeypatch.setitem(stories.SUITES, "receipts", broken)
     with pytest.raises(generate.SuiteError, match="text no frame shows"):
         generate.build("receipts", 1)
 
